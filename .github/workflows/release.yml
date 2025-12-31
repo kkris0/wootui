@@ -1,0 +1,99 @@
+name: Build and Release
+
+# This workflow runs when a new tag is pushed to the repository
+on:
+    push:
+        tags:
+            - "v*" # Trigger on tags like v1.0.0, v1.2.3, etc.
+
+permissions:
+    contents: write # This is required to create a release and upload assets
+
+jobs:
+    build-and-release:
+        name: Build and Release
+        runs-on: ubuntu-latest # Use a single runner for all builds
+
+        strategy:
+            matrix:
+                # Define all the targets you want to build for
+                target:
+                    - name: wootube-darwin-x64
+                      os: macos-latest # Runner OS for the build
+                      bun_target: bun-darwin-x64
+                      archive_ext: .zip
+                    - name: wootube-darwin-arm64
+                      os: macos-latest
+                      bun_target: bun-darwin-aarch64
+                      archive_ext: .zip
+                    - name: wootube-linux-x64
+                      os: ubuntu-latest
+                      bun_target: bun-linux-x64
+                      archive_ext: .tar.gz
+                    - name: wootube-linux-arm64
+                      os: ubuntu-latest
+                      bun_target: bun-linux-aarch64
+                      archive_ext: .tar.gz
+                    - name: wootube-windows-x64
+                      os: windows-latest
+                      bun_target: bun-windows-x64
+                      archive_ext: .zip
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            - name: Build executable
+              # Assumes your main entry file is src/index.ts
+              # The output file will be named after matrix.target.name
+              run: bun build ./src/index.ts --compile --target ${{ matrix.target.bun_target }} --outfile ${{ matrix.target.name }}
+
+            - name: Prepare artifact for Windows
+              if: matrix.target.os == 'windows-latest'
+              run: |
+                  mv ${{ matrix.target.name }} ${{ matrix.target.name }}.exe
+                  7z a ${{ matrix.target.name }}.zip ${{ matrix.target.name }}.exe
+              shell: pwsh
+
+            - name: Prepare artifact for macOS
+              if: matrix.target.os == 'macos-latest'
+              run: zip ${{ matrix.target.name }}.zip ${{ matrix.target.name }}
+
+            - name: Prepare artifact for Linux
+              if: matrix.target.os == 'ubuntu-latest'
+              run: tar -czf ${{ matrix.target.name }}.tar.gz ${{ matrix.target.name }}
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ matrix.target.name }}${{ matrix.target.archive_ext }}
+                  path: ${{ matrix.target.name }}${{ matrix.target.archive_ext }}
+
+    release:
+        name: Create GitHub Release
+        needs: build-and-release # This job runs only after the build job is complete
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  path: artifacts # Download all artifacts to a directory named 'artifacts'
+
+            - name: Create Release and Upload Assets
+              uses: softprops/action-gh-release@v1
+              with:
+                  # The release name will be the same as the tag
+                  tag_name: ${{ github.ref_name }}
+                  # Use the body of the tag message as the release notes
+                  body_path: ${{ github.event.head_commit.message }}
+                  files: |
+                      artifacts/*/* # Upload all files from all subdirectories

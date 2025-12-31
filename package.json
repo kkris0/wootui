@@ -4,7 +4,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch src/index.tsx"
+    "dev": "bun run --watch src/index.tsx",
+    "build": "bun build ./src/index.tsx --outdir dist",
+    "build:macos-arm64": "bun build --compile ./src/index.tsx --target=bun-darwin-arm64 --outfile dist/app-macos-arm64",
+    "build:macos-x64": "bun build --compile ./src/index.tsx --target=bun-darwin-x64 --outfile dist/app-macos-x64",
+    "build:windows": "bun build --compile ./src/index.tsx --target=bun-windows-x64 --outfile dist/app-windows.exe",
+    "build:linux-x64": "bun build --compile ./src/index.tsx --target=bun-linux-x64 --outfile dist/app-linux-x64",
+    "build:linux-arm64": "bun build --compile ./src/index.tsx --target=bun-linux-arm64 --outfile dist/app-linux-arm64"
   },
   "devDependencies": {
     "@types/bun": "latest",
