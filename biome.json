@@ -1,0 +1,92 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": false
+    },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": [
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.js",
+            "**/*.jsx",
+            "!migrations",
+            "!dist",
+            "!.next",
+            "!.git",
+            "!build",
+            "!node_modules"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 100,
+        "attributePosition": "auto"
+    },
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "a11y": {
+                "recommended": true
+            },
+            "correctness": {
+                "noUnusedImports": "error"
+            },
+            "style": {
+                "useImportType": "off"
+            },
+            "complexity": {
+                "noStaticOnlyClass": "off",
+                "noThisInStatic": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "jsxQuoteStyle": "double",
+            "quoteProperties": "asNeeded",
+            "trailingCommas": "es5",
+            "semicolons": "always",
+            "arrowParentheses": "asNeeded",
+            "bracketSpacing": true,
+            "bracketSameLine": false,
+            "quoteStyle": "single",
+            "attributePosition": "auto"
+        }
+    },
+    "css": {
+        "parser": {
+            "cssModules": true
+        },
+        "formatter": {
+            "enabled": true,
+            "quoteStyle": "single"
+        }
+    },
+    "overrides": [
+        {
+            "includes": ["**/*.spec.ts", "**/*.e2e.ts", "**/*.test.ts"],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "useNamingConvention": "off"
+                    }
+                }
+            }
+        }
+    ]
+}
