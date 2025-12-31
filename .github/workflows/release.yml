@@ -16,30 +16,30 @@ jobs:
         strategy:
             matrix:
                 target:
-                    - name: tuitube-darwin-x64
-                      os: macos-latest
+                    - name: wootui-darwin-x64
                       bun_target: bun-darwin-x64
-                      opentui_pkg: "@opentui/core-darwin-x64"
+                      bun_os: darwin
+                      bun_cpu: x64
                       archive_ext: .zip
-                    - name: tuitube-darwin-arm64
-                      os: macos-latest
+                    - name: wootui-darwin-arm64
                       bun_target: bun-darwin-aarch64
-                      opentui_pkg: "@opentui/core-darwin-arm64"
+                      bun_os: darwin
+                      bun_cpu: arm64
                       archive_ext: .zip
-                    - name: tuitube-linux-x64
-                      os: ubuntu-latest
+                    - name: wootui-linux-x64
                       bun_target: bun-linux-x64
-                      opentui_pkg: "@opentui/core-linux-x64"
+                      bun_os: linux
+                      bun_cpu: x64
                       archive_ext: .tar.gz
-                    - name: tuitube-linux-arm64
-                      os: ubuntu-latest
+                    - name: wootui-linux-arm64
                       bun_target: bun-linux-aarch64
-                      opentui_pkg: "@opentui/core-linux-arm64"
+                      bun_os: linux
+                      bun_cpu: arm64
                       archive_ext: .tar.gz
-                    - name: tuitube-windows-x64
-                      os: windows-latest
+                    - name: wootui-windows-x64
                       bun_target: bun-windows-x64
-                      opentui_pkg: "@opentui/core-win32-x64" # Note: win32 for Windows
+                      bun_os: win32
+                      bun_cpu: x64
                       archive_ext: .zip
 
         steps:
@@ -55,7 +55,7 @@ jobs:
               run: bun install --frozen-lockfile
 
             - name: Install target platform package
-              run: bun add ${{ matrix.target.opentui_pkg }}
+              run: bun install --os ${{ matrix.target.os }} --cpu ${{ matrix.target.cpu }}
 
             - name: Build executable
               run: bun build ./src/index.tsx --compile --target ${{ matrix.target.bun_target }} --outfile ${{ matrix.target.name }}
