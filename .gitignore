@@ -41,3 +41,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # AI files
 .claude/
+
+# Output directory
+output/

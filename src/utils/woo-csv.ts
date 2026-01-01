@@ -15,6 +15,7 @@ import { generateText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { extractCode } from './extract-code';
 import { geminiPrompt, geminiPromptAttributeNames, geminiSystemPrompt } from './prompts';
+import { estimateGeminiCost, GEMINI_PRICING } from './gemini-pricing';
 
 /**
  * WPML import column keys
@@ -330,8 +331,9 @@ class WooCsvParser {
     public async estimateTokenAndPrice(
         productsFlat: Record<string, string | undefined>[],
         batchSize: number,
-        targetLanguages: LanguageCode,
-        apiKey: string
+        targetLanguage: LanguageCode,
+        apiKey: string,
+        modelId: string
     ): Promise<EstimateTokenAndPriceResult> {
         const client = new GoogleGenAI({
             apiKey,
@@ -379,56 +381,40 @@ class WooCsvParser {
             };
         }
 
-        const systemPrompt = geminiSystemPrompt(targetLanguages);
+        const systemPrompt = geminiSystemPrompt(targetLanguage);
         const prompt = geminiPrompt(encodedProducts);
 
         const tokens = await client.models.countTokens({
-            model: 'gemini-3-flash-preview',
+            model: modelId,
             contents: systemPrompt + prompt,
         });
 
         const wordCount = (systemPrompt + prompt).split(' ').length;
 
-        // 	Paid Tier, per 1M tokens in USD
-        // Gemini 3 Flash Preview
-        // Input
-        // 	$0.5
-        // Output
-        // 	$3.0
-
-        console.log(`Tokens: ${tokens.totalTokens}, Cache: ${tokens.cachedContentTokenCount}`);
-        const priceInputModifier = 0.5;
-        const priceOutputModifier = 3.0;
-
-        const estimatedPriceInput = (priceInputModifier * (tokens?.totalTokens ?? 0)) / 1_000_000;
-        const estimatedPriceOutput = (priceOutputModifier * (tokens?.totalTokens ?? 0)) / 1_000_000;
-        const estimatedPriceTotal = estimatedPriceInput + estimatedPriceOutput;
-
-        // Pricing per word
-        const estimatedPricePerWordInput = (estimatedPriceInput * 100) / wordCount;
-        const pricePerWordOutput = (estimatedPriceOutput * 100) / wordCount;
-        const estimatedPricePerWordTotal =
-            estimatedPricePerWordInput + (estimatedPriceOutput * 100) / wordCount;
+        const estimatedPrice = estimateGeminiCost({
+            model: modelId as keyof typeof GEMINI_PRICING,
+            usage: {
+                promptTokens: tokens.totalTokens ?? 0,
+                completionTokens: tokens.totalTokens ?? 0,
+            },
+        });
 
         console.table({
-            'Estimated price total': estimatedPriceTotal,
-            'Estimated price input': estimatedPriceInput,
-            'Estimated price output': estimatedPriceOutput,
-            'Estimated price per word total': estimatedPricePerWordTotal,
-            'Estimated price per word input': estimatedPricePerWordInput,
-            'Estimated price per word output': pricePerWordOutput,
+            'Estimated price total': estimatedPrice.totalCost,
+            'Estimated price input': estimatedPrice.inputCost,
+            'Estimated price output': estimatedPrice.outputCost,
         });
 
         return {
             wordCount,
             tokenCount: tokens.totalTokens ?? 0,
             estimatedPrice: {
-                total: estimatedPriceTotal,
-                input: estimatedPriceInput,
-                output: estimatedPriceOutput,
-                perWordTotal: estimatedPricePerWordTotal,
-                perWordInput: estimatedPricePerWordInput,
-                perWordOutput: pricePerWordOutput,
+                total: estimatedPrice.totalCost,
+                input: estimatedPrice.inputCost,
+                output: estimatedPrice.outputCost,
+                perWordTotal: estimatedPrice.totalCost / wordCount,
+                perWordInput: estimatedPrice.inputCost / wordCount,
+                perWordOutput: estimatedPrice.outputCost / wordCount,
             },
 
             encodedProducts,

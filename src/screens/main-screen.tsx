@@ -419,7 +419,15 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     toast.error('API key is required', {
                         description: 'Please configure the API key in Settings',
                     });
-                    return;
+                    throw new Error('API key is required');
+                }
+
+                const modelId = config.get('modelId');
+                if (!modelId) {
+                    toast.error('Model ID is required', {
+                        description: 'Please configure the model ID in Settings',
+                    });
+                    throw new Error('Model ID is required');
                 }
 
                 // Compute estimates for all target languages
@@ -430,7 +438,8 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         productsFlat,
                         batchSize,
                         language,
-                        apiKey
+                        apiKey,
+                        modelId
                     );
                     estimatesByLanguage.set(language, estimate);
                 }
@@ -605,7 +614,12 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const modelId = config.get('modelId');
                 const outputDir = config.get('outputDir') || './output';
 
-                if (!apiKey) throw new Error('API key is required. Configure it in Settings.');
+                if (!apiKey) {
+                    toast.error('API key is required', {
+                        description: 'Please configure the API key in Settings',
+                    });
+                    throw new Error('API key is required');
+                }
 
                 // Ensure output directory exists
                 fs.mkdirSync(outputDir, { recursive: true });
@@ -618,7 +632,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     toast.error(`No languages selected`, {
                         description: `Please select at least one language to translate.`,
                     });
-                    return;
+                    throw new Error('No languages selected');
                 }
 
                 const toastId = toast.loading(`Translating 0/${totalLanguages}...`);
@@ -681,6 +695,15 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
 
                         const csv = Papa.unparse(finalRows);
                         fs.writeFileSync(outputPath, csv, 'utf8');
+
+                        // 5. Also save the original source products to the output directory
+                        const sourceProducts = carryData.parseSummary.productSourceTranslations;
+                        const sourceProductsCsv = Papa.unparse(sourceProducts);
+                        fs.writeFileSync(
+                            path.join(outputDir, `${inputBaseName}-source-products.csv`),
+                            sourceProductsCsv,
+                            'utf8'
+                        );
 
                         results.push({ language, outputPath });
                     }
