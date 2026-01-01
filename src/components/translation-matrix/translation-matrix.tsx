@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { LanguageCode } from '../../types/language-code';
 import { type WooCsvParseSummary, WpmlImportColumns } from '../../utils/woo-csv';
 import { COLORS } from '../form/constants';
+import { languageMap } from '../../utils/language-map';
 
 export interface TranslationMatrixProps {
     parseSummary: WooCsvParseSummary;
@@ -88,19 +89,32 @@ export function TranslationMatrix({
         return null;
     }
 
-    const COL_WIDTH = 10;
+    const COL_WIDTH = 12;
     const SOURCE_COL_WIDTH = 8;
 
     return (
         <box flexDirection="column" marginTop={1}>
             {/* Header Row */}
             <box flexDirection="row">
-                <box width={SOURCE_COL_WIDTH}>
+                <box
+                    width={SOURCE_COL_WIDTH}
+                    border={['top', 'left', 'right']}
+                    borderColor="#aaaaaa"
+                    borderStyle="single"
+                >
                     <text attributes={TextAttributes.DIM}>Source</text>
                 </box>
-                {targetLanguages.map(lang => (
-                    <box key={lang} width={COL_WIDTH} justifyContent="center">
-                        <text attributes={TextAttributes.BOLD}>{lang.toUpperCase()}</text>
+                {targetLanguages.map((lang, index) => (
+                    <box
+                        key={lang}
+                        width={COL_WIDTH}
+                        justifyContent="center"
+                        alignItems="center"
+                        border={['top', 'right', 'left']}
+                        borderColor="#aaaaaa"
+                        borderStyle="single"
+                    >
+                        <text attributes={TextAttributes.BOLD}>{languageMap[lang]}</text>
                     </box>
                 ))}
             </box>
@@ -108,10 +122,15 @@ export function TranslationMatrix({
             {/* Rows */}
             {sourceLanguages.map(sourceLang => (
                 <box key={sourceLang} flexDirection="row">
-                    <box width={SOURCE_COL_WIDTH}>
+                    <box
+                        width={SOURCE_COL_WIDTH}
+                        border={['bottom', 'left', 'right']}
+                        borderColor="#aaaaaa"
+                        borderStyle="single"
+                    >
                         <text>{sourceLang.toUpperCase()}</text>
                     </box>
-                    {targetLanguages.map(targetLang => {
+                    {targetLanguages.map((targetLang, index) => {
                         const count = getCellContent(sourceLang, targetLang);
                         const isOverride = overrideLanguages.includes(targetLang);
 
@@ -132,6 +151,10 @@ export function TranslationMatrix({
                                 key={`${sourceLang}-${targetLang}`}
                                 width={COL_WIDTH}
                                 justifyContent="center"
+                                alignItems="center"
+                                border={['bottom', 'right', 'left']}
+                                borderColor="#aaaaaa"
+                                borderStyle="single"
                             >
                                 <text
                                     fg={color}

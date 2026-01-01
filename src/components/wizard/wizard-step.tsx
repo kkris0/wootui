@@ -126,6 +126,7 @@ export function WizardStep({
             iconColor={iconColor}
             minHeight={5}
             paddingLeft={3}
+            isFocused={isFocused}
             onMouseDown={() => {
                 if (!isLocked) {
                     setFocusedStepIndex(index);

@@ -14,6 +14,7 @@ class ConsoleButtonRenderable extends BoxRenderable {
     private _icon: string = '▪';
     private _iconColor: string = '#ffffff';
     private _isLast: boolean = false;
+    private _isFocused: boolean = false;
     constructor(
         ctx: RenderContext,
         options: BoxOptions & {
@@ -22,6 +23,7 @@ class ConsoleButtonRenderable extends BoxRenderable {
             labelColor?: string;
             icon?: string;
             iconColor?: string;
+            isFocused?: boolean;
         }
     ) {
         super(ctx, {
@@ -49,13 +51,17 @@ class ConsoleButtonRenderable extends BoxRenderable {
         if (options.iconColor) {
             this._iconColor = options.iconColor;
         }
+
+        if (options.isFocused) {
+            this._isFocused = options.isFocused;
+        }
     }
 
     public override renderSelf(buffer: OptimizedBuffer): void {
         const topOffset = 0;
 
         this.drawBackground(buffer);
-        this.drawCustomBorder(buffer, topOffset);
+        this.drawCustomBorder(buffer, topOffset, this._isFocused);
         // this.drawLabel(buffer, topOffset);
     }
 
@@ -67,7 +73,7 @@ class ConsoleButtonRenderable extends BoxRenderable {
         }
     }
 
-    private drawCustomBorder(buffer: OptimizedBuffer, topOffset: number) {
+    private drawCustomBorder(buffer: OptimizedBuffer, topOffset: number, focused: boolean) {
         const x = this.x;
         const y = this.y;
         const h = this.height;
@@ -77,11 +83,16 @@ class ConsoleButtonRenderable extends BoxRenderable {
 
         // left border (starts lower)
         for (let i = topOffset + 1; i < h - 1; i++) {
-            buffer.drawText('│', x, y + i, RGBA.fromHex(this._labelColor));
+            buffer.drawText(focused ? '┃' : '│', x, y + i, RGBA.fromHex(this._labelColor));
         }
 
         // bottom left corner shifted
-        buffer.drawText(this._isLast ? '└' : '│', x, y + h - 1, RGBA.fromHex(this._labelColor));
+        buffer.drawText(
+            this._isLast ? (focused ? '┗' : '└') : focused ? '┃' : '│',
+            x,
+            y + h - 1,
+            RGBA.fromHex(this._labelColor)
+        );
     }
 
     get label(): string {
@@ -100,6 +111,17 @@ class ConsoleButtonRenderable extends BoxRenderable {
     set isLast(value: boolean) {
         if (this._isLast !== value) {
             this._isLast = value;
+            this.requestRender();
+        }
+    }
+
+    get isFocused(): boolean {
+        return this._isFocused;
+    }
+
+    set isFocused(value: boolean) {
+        if (this._isFocused !== value) {
+            this._isFocused = value;
             this.requestRender();
         }
     }

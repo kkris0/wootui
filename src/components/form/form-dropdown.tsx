@@ -158,9 +158,11 @@ export function FormDropdown({
         if (!isFocused) return;
 
         if (key.name === 'up') {
-            setHighlightedIndex(i => Math.max(0, i - 1));
+            if (highlightedIndex === 0) setHighlightedIndex(flatOptions.length - 1);
+            else setHighlightedIndex(highlightedIndex - 1);
         } else if (key.name === 'down') {
-            setHighlightedIndex(i => Math.min(flatOptions.length - 1, i + 1));
+            if (highlightedIndex === flatOptions.length - 1) setHighlightedIndex(0);
+            else setHighlightedIndex(highlightedIndex + 1);
         } else if (key.name === 'return' && !key.ctrl) {
             const option = flatOptions[highlightedIndex];
             if (option) {
@@ -241,18 +243,27 @@ export function FormDropdown({
                 : `  ${isSelected ? ICONS.checkboxChecked : ICONS.checkboxEmpty}`;
 
             scrollboxChildren.push(
-                <text
+                // biome-ignore lint/a11y/noStaticElementInteractions: Terminal UI handles interaction separately
+                <box
                     key={`option-${item.optionIndex}`}
-                    fg={
-                        isSelected
-                            ? COLORS.focused
-                            : isHighlighted
-                              ? COLORS.focused
-                              : COLORS.unfocused
-                    }
+                    onMouseDown={() => {
+                        toggleSelection(item.optionValue ?? '');
+                        setHighlightedIndex(item.optionIndex ?? 0);
+                    }}
                 >
-                    {prefix} {item.content}
-                </text>
+                    <text
+                        key={`option-${item.optionIndex}`}
+                        fg={
+                            isSelected
+                                ? COLORS.focused
+                                : isHighlighted
+                                  ? COLORS.focused
+                                  : COLORS.unfocused
+                        }
+                    >
+                        {prefix} {item.content}
+                    </text>
+                </box>
             );
         }
     });

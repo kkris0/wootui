@@ -241,25 +241,32 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
 
                             {/* 3. Interactive Selection Dropdown */}
                             {ctx.isFocused && (
-                                <Form.Dropdown
-                                    title=""
-                                    values={ctx.values.selectedMetaColumns}
-                                    onChange={vals =>
-                                        ctx.setValue('selectedMetaColumns', vals as string[])
-                                    }
-                                    maxVisibleItems={10}
-                                    isFocused={!ctx.isLocked}
-                                >
-                                    <Form.Dropdown.Section title="Metadata (Default: SEO Only)">
-                                        {sortedMeta.map(meta => (
-                                            <Form.Dropdown.Item
-                                                key={meta}
-                                                value={meta}
-                                                title={meta.replace('Meta: ', '')} // Clean display name
-                                            />
-                                        ))}
-                                    </Form.Dropdown.Section>
-                                </Form.Dropdown>
+                                <>
+                                    <Form.Dropdown
+                                        title=""
+                                        values={ctx.values.selectedMetaColumns}
+                                        onChange={vals =>
+                                            ctx.setValue('selectedMetaColumns', vals as string[])
+                                        }
+                                        maxVisibleItems={10}
+                                        isFocused={!ctx.isLocked}
+                                    >
+                                        <Form.Dropdown.Section title="Metadata (Default: SEO Only)">
+                                            {sortedMeta.map(meta => (
+                                                <Form.Dropdown.Item
+                                                    key={meta}
+                                                    value={meta}
+                                                    title={meta.replace('Meta: ', '')} // Clean display name
+                                                />
+                                            ))}
+                                        </Form.Dropdown.Section>
+                                    </Form.Dropdown>
+                                    <box flexDirection="row" marginTop={1} columnGap={1}>
+                                        <text attributes={TextAttributes.DIM}>↑ up</text>
+                                        <text attributes={TextAttributes.DIM}>↓ down</text>
+                                        <text attributes={TextAttributes.DIM}>↵ select</text>
+                                    </box>
+                                </>
                             )}
                         </box>
                     );
@@ -315,25 +322,32 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                             <text key="spacer"> </text>
 
                             {ctx.isFocused && (
-                                <Form.Dropdown
-                                    title=""
-                                    values={ctx.values.targetLanguages}
-                                    onChange={vals =>
-                                        ctx.setValue('targetLanguages', vals as LanguageCode[])
-                                    }
-                                    maxVisibleItems={8}
-                                    isFocused={ctx.isFocused && !ctx.isLocked}
-                                >
-                                    <Form.Dropdown.Section title="Available Languages">
-                                        {Object.entries(languageMap).map(([code, name]) => (
-                                            <Form.Dropdown.Item
-                                                key={code}
-                                                value={code}
-                                                title={name}
-                                            />
-                                        ))}
-                                    </Form.Dropdown.Section>
-                                </Form.Dropdown>
+                                <>
+                                    <Form.Dropdown
+                                        title=""
+                                        values={ctx.values.targetLanguages}
+                                        onChange={vals =>
+                                            ctx.setValue('targetLanguages', vals as LanguageCode[])
+                                        }
+                                        maxVisibleItems={8}
+                                        isFocused={ctx.isFocused && !ctx.isLocked}
+                                    >
+                                        <Form.Dropdown.Section title="Available Languages">
+                                            {Object.entries(languageMap).map(([code, name]) => (
+                                                <Form.Dropdown.Item
+                                                    key={code}
+                                                    value={code}
+                                                    title={name}
+                                                />
+                                            ))}
+                                        </Form.Dropdown.Section>
+                                    </Form.Dropdown>
+                                    <box flexDirection="row" marginTop={1} columnGap={1}>
+                                        <text attributes={TextAttributes.DIM}>↑ up</text>
+                                        <text attributes={TextAttributes.DIM}>↓ down</text>
+                                        <text attributes={TextAttributes.DIM}>↵ select</text>
+                                    </box>
+                                </>
                             )}
 
                             {ctx.values.targetLanguages.length > 0 && (
