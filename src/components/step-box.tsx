@@ -93,6 +93,16 @@ class ConsoleButtonRenderable extends BoxRenderable {
             y + h - 1,
             RGBA.fromHex(this._labelColor)
         );
+
+        // bottom line border only on focused
+        if (this._isLast) {
+            buffer.drawText(
+                '─'.repeat(this.width - 2),
+                x + 1,
+                y + h - 1,
+                RGBA.fromHex(this._labelColor)
+            );
+        }
     }
 
     get label(): string {

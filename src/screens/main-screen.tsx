@@ -385,10 +385,18 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
             },
             onSubmit: async (values, context) => {
                 if (values.targetLanguages.length === 0) {
-                    throw new Error('Please select at least one target language');
+                    toast.error('No target languages selected', {
+                        description: 'Please select at least one target language',
+                    });
+                    throw new Error('No target languages selected');
                 }
                 const step2Data = context.previousStepState?.data as Step2Result | undefined;
-                if (!step2Data?.parseSummary) throw new Error('CSV file not parsed');
+                if (!step2Data?.parseSummary) {
+                    toast.error('CSV file not parsed', {
+                        description: 'Please parse the CSV file first',
+                    });
+                    throw new Error('CSV file not parsed');
+                }
 
                 const { parseSummary } = step2Data;
 
@@ -408,7 +416,10 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const apiKey = config.get('apiKey');
 
                 if (!apiKey) {
-                    throw new Error('API key is required. Configure it in Settings.');
+                    toast.error('API key is required', {
+                        description: 'Please configure the API key in Settings',
+                    });
+                    return;
                 }
 
                 // Compute estimates for all target languages

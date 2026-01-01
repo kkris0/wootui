@@ -1,8 +1,8 @@
-import { type ReactNode, Children } from 'react';
 import { TextAttributes } from '@opentui/core';
-import { useWizardContext } from './wizard-context';
-import type { WizardStepStatus } from './types';
+import { type ReactNode } from 'react';
 import { Spinner } from '../../utils/spinner';
+import type { WizardStepStatus } from './types';
+import { useWizardContext } from './wizard-context';
 
 const ICONS = {
     firstUnfocused: '▪',
@@ -73,30 +73,6 @@ function getStepIcon(
 }
 
 /**
- * Renders a single content line with the vertical line prefix
- */
-function ContentLine({
-    color,
-    isLocked,
-    children,
-}: {
-    color: string;
-    isLocked: boolean;
-    children: ReactNode;
-}) {
-    return (
-        <box flexDirection="row">
-            <box width={2}>
-                <text fg={color}>{ICONS.lineVertical}</text>
-            </box>
-            <box paddingLeft={1} flexGrow={1}>
-                {children}
-            </box>
-        </box>
-    );
-}
-
-/**
  * Wrapper for wizard steps with progress indicator and lock support
  */
 export function WizardStep({
@@ -113,8 +89,6 @@ export function WizardStep({
 
     const { icon, color: iconColor } = getStepIcon(isFirst, isFocused, status);
     const titleColor = isLocked ? COLORS.locked : isFocused ? COLORS.focused : COLORS.unfocused;
-
-    const childArray = Children.toArray(children);
 
     return (
         // biome-ignore lint/a11y/noStaticElementInteractions: Terminal UI handles keyboard separately
@@ -146,62 +120,5 @@ export function WizardStep({
                 </box>
             </box>
         </consoleButton>
-    );
-
-    return (
-        // biome-ignore lint/a11y/noStaticElementInteractions: Terminal UI handles keyboard separately
-        <box
-            flexDirection="column"
-            onMouseDown={() => {
-                if (!isLocked) {
-                    setFocusedStepIndex(index);
-                }
-            }}
-            borderColor={titleColor}
-            // border={['left']}
-            // customBorderChars={{
-            //     topLeft: '┌',
-            //     topRight: '┐',
-            //     bottomLeft: '└',
-            //     bottomRight: '┘',
-            //     horizontal: '─',
-            //     vertical: '│',
-            //     topT: '┬',
-            //     bottomT: '┴',
-            //     leftT: '├',
-            //     rightT: '┤',
-            //     cross: '┼',
-            // }}
-        >
-            {/* Main step row with icon and title */}
-            <box flexDirection="row">
-                <box width={2}>
-                    <text fg={iconColor}>{icon}</text>
-                </box>
-                <box paddingLeft={1} flexDirection="row" columnGap={1}>
-                    <text fg={titleColor} attributes={TextAttributes.BOLD}>
-                        {title}
-                    </text>
-                    {status === 'running' && (
-                        <Spinner color={COLORS.running} label="Processing..." />
-                    )}
-                </box>
-            </box>
-
-            {/* Each child gets its own line prefix */}
-            {childArray.map((child, idx) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: Children don't have stable keys
-                <ContentLine key={idx} color={titleColor} isLocked={isLocked}>
-                    {child}
-                </ContentLine>
-            ))}
-
-            {/* Final connector - corner for last step, vertical line for others */}
-            <box flexDirection="row">
-                <box width={2}>
-                    <text fg={titleColor}>{isLast ? ICONS.lineCorner : ICONS.lineVertical}</text>
-                </box>
-            </box>
-        </box>
     );
 }
