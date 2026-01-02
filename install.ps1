@@ -133,10 +133,8 @@ try {
     Write-Color "Extracting..." -Color Cyan -NoNewLine
     Expand-Archive -Path $ZipPath -DestinationPath $TempDir -Force
     
-    # Move binary to install dir (Handle extraction folder structure if necessary)
-    # Assuming zip contains the binary directly or inside a folder. 
-    # We look for the .exe recursively in temp and move it.
-    $ExtractedBinary = Get-ChildItem -Path $TempDir -Filter "$AppName.exe" -Recurse | Select-Object -First 1
+    $BinaryName = [System.IO.Path]::GetFileNameWithoutExtension($Filename) + ".exe"
+    $ExtractedBinary = Get-ChildItem -Path $TempDir -Filter $BinaryName -Recurse | Select-Object -First 1
     
     if ($ExtractedBinary) {
         Move-Item -Path $ExtractedBinary.FullName -Destination $ExePath -Force

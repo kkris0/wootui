@@ -22,5 +22,5 @@ curl -sf https://ashesofphoenix.github.io/wootui/install | bash
 **Windows:**
 
 ```sh
-curl -sf https://ashesofphoenix.github.io/wootui/install.ps1 | iex
+irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
 ```
