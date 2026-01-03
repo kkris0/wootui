@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core';
 import { type ReactNode } from 'react';
 import { Spinner } from '../../utils/spinner';
-import type { WizardStepStatus } from './types';
+import type { WizardStepStatusType } from './types';
 import { useWizardContext } from './wizard-context';
 
 const ICONS = {
@@ -35,7 +35,7 @@ export interface WizardStepProps {
     /** Whether this is the last visible step */
     isLast: boolean;
     /** Status of this step */
-    status: WizardStepStatus;
+    status: WizardStepStatusType;
     /** Whether this step is locked */
     isLocked: boolean;
     /** Step content */
@@ -48,7 +48,7 @@ export interface WizardStepProps {
 function getStepIcon(
     isFirst: boolean,
     isFocused: boolean,
-    status: WizardStepStatus
+    status: WizardStepStatusType
 ): { icon: string; color: string } {
     if (status === 'running') {
         return { icon: ICONS.running, color: COLORS.running };

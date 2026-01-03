@@ -5,6 +5,6 @@ export type {
     WizardProps,
     WizardStepDefinition,
     WizardStepState,
-    WizardStepStatus,
+    WizardStepStatusType as WizardStepStatus,
     WizardStepContext,
 } from './types';

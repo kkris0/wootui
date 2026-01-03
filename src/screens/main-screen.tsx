@@ -25,6 +25,7 @@ import { languageMap } from '../utils/language-map';
 import { Spinner } from '../utils/spinner';
 import type { AttributeName } from '../utils/translate';
 import { wooCsvParser } from '../utils/woo-csv';
+import { WizardStepStatus } from '../components/wizard/types';
 
 export interface MainScreenProps {
     onNavigateToSettings: () => void;
@@ -118,13 +119,13 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const prevState = ctx.previousStepState;
                 const summary = prevState?.data as WooCsvParseSummary | undefined;
 
-                if (prevState?.status === 'running') {
+                if (prevState?.status === WizardStepStatus.RUNNING) {
                     return (
                         <Spinner color="#3b82f6" label="Parsing and analyzing CSV structure..." />
                     );
                 }
 
-                if (prevState?.status === 'error') {
+                if (prevState?.status === WizardStepStatus.ERROR) {
                     return (
                         <box
                             flexDirection="row"
@@ -142,7 +143,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     );
                 }
 
-                if (prevState?.status === 'success' && summary) {
+                if (prevState?.status === WizardStepStatus.SUCCESS && summary) {
                     const sourceLangCode = summary.productSourceTranslations[0]?.[
                         WpmlImportColumns.ImportLanguageCode
                     ] as string;
@@ -263,11 +264,11 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const step2Data = prevState?.data as Step2Result | undefined;
                 const parseSummary = step2Data?.parseSummary;
 
-                if (prevState?.status === 'running') {
+                if (prevState?.status === WizardStepStatus.RUNNING) {
                     return <Spinner color="#3b82f6" label="Preparing products..." />;
                 }
 
-                if (prevState?.status === 'error') {
+                if (prevState?.status === WizardStepStatus.ERROR) {
                     return (
                         <box flexDirection="row">
                             <text fg="#ef4444" attributes={TextAttributes.BOLD}>
@@ -288,7 +289,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     ctx.setValue('overrideLanguages', newOverrides);
                 };
 
-                if (prevState?.status === 'success' && parseSummary) {
+                if (prevState?.status === WizardStepStatus.SUCCESS && parseSummary) {
                     return (
                         <box flexDirection="column">
                             <text attributes={TextAttributes.DIM}>
@@ -435,11 +436,11 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const prevState = ctx.previousStepState;
                 const carryData = prevState?.data as CarryData | undefined;
 
-                if (prevState?.status === 'running') {
+                if (prevState?.status === WizardStepStatus.RUNNING) {
                     return <Spinner color="#3b82f6" label="Estimating token and price..." />;
                 }
 
-                if (prevState?.status === 'error') {
+                if (prevState?.status === WizardStepStatus.ERROR) {
                     return (
                         <box flexDirection="row">
                             <text fg="#ef4444" attributes={TextAttributes.BOLD}>
@@ -452,7 +453,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     );
                 }
 
-                if (prevState?.status === 'success' && carryData) {
+                if (prevState?.status === WizardStepStatus.SUCCESS && carryData) {
                     let totalTokens = 0;
                     let totalPrice = 0;
 
@@ -528,11 +529,11 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const prevState = ctx.previousStepState;
                 const outputDir = config.get('outputDir') || './output';
 
-                if (prevState?.status === 'running') {
+                if (prevState?.status === WizardStepStatus.RUNNING) {
                     return <Spinner color="#3b82f6" label="Translating products..." />;
                 }
 
-                if (prevState?.status === 'error') {
+                if (prevState?.status === WizardStepStatus.ERROR) {
                     return (
                         <box flexDirection="column">
                             <box flexDirection="row">
@@ -547,7 +548,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     );
                 }
 
-                if (prevState?.status === 'success') {
+                if (prevState?.status === WizardStepStatus.SUCCESS) {
                     const carryData = prevState.data as CarryData & { confirmed: boolean };
                     const languageCount = carryData.estimatesByLanguage.size;
 
@@ -635,14 +636,12 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                             throw new Error(`No estimate found for language: ${language}`);
                         }
 
-                        // 1. Translate attribute names
                         const translatedAttributeNames = await wooCsvParser.translateAttributeNames(
                             carryData.allUniqueAttributeNames,
                             language,
                             apiKey
                         );
 
-                        // 2. Translate products
                         const { costBreakdown, translatedProducts } = await wooCsvParser.translate(
                             modelId,
                             estimate.systemPrompt,
@@ -652,7 +651,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                             apiKey
                         );
 
-                        // 3. Post-process translated products
                         const finalRows = await wooCsvParser.postProcessTranslatedProducts(
                             carryData.parseSummary.productSourceTranslations,
                             translatedAttributeNames,
@@ -661,7 +659,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                             language
                         );
 
-                        // 4. Write CSV
                         const timestamp = new Date()
                             .toISOString()
                             .replace(/[:.]/g, '-')
@@ -676,7 +673,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         const csv = Papa.unparse(finalRows);
                         fs.writeFileSync(outputPath, csv, 'utf8');
 
-                        // Extract token counts and cost from breakdown
                         const inputTokens =
                             costBreakdown.find(c => c.Type === 'Input tokens')?.Count ?? 0;
                         const outputTokens =
@@ -760,11 +756,11 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const prevState = ctx.previousStepState;
                 const results = prevState?.data as TranslationResults | undefined;
 
-                if (prevState?.status === 'running') {
+                if (prevState?.status === WizardStepStatus.RUNNING) {
                     return <Spinner color="#3b82f6" label="Finalizing..." />;
                 }
 
-                if (prevState?.status === 'error') {
+                if (prevState?.status === WizardStepStatus.ERROR) {
                     return (
                         <box flexDirection="column">
                             <text fg="#ef4444" attributes={TextAttributes.BOLD}>
@@ -777,7 +773,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     );
                 }
 
-                if (prevState?.status === 'success' && results) {
+                if (prevState?.status === WizardStepStatus.SUCCESS && results) {
                     return (
                         <box flexDirection="column">
                             <text fg="#22c55e" attributes={TextAttributes.BOLD}>

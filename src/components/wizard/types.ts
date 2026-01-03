@@ -1,16 +1,23 @@
 import type { ReactNode } from 'react';
 
+export enum WizardStepStatus {
+    IDLE = 'idle',
+    RUNNING = 'running',
+    SUCCESS = 'success',
+    ERROR = 'error',
+}
+
 /**
  * Status of a wizard step
  */
-export type WizardStepStatus = 'idle' | 'running' | 'success' | 'error';
+export type WizardStepStatusType = (typeof WizardStepStatus)[keyof typeof WizardStepStatus];
 
 /**
  * State for a single wizard step
  */
 export interface WizardStepState<TData = unknown> {
     /** Current status of the step */
-    status: WizardStepStatus;
+    status: WizardStepStatusType;
     /** Error message if status is 'error' */
     error?: string;
     /** Result data if status is 'success' */
