@@ -1,20 +1,21 @@
 import {
+    type BoxOptions,
     BoxRenderable,
     OptimizedBuffer,
-    RGBA,
-    type BoxOptions,
     type RenderContext,
+    RGBA,
 } from '@opentui/core';
 import { extend } from '@opentui/react';
 
-// Custom renderable that extends BoxRenderable
 class ConsoleButtonRenderable extends BoxRenderable {
-    private _label: string = 'Button';
-    private _labelColor: string = '#ffffff';
-    private _icon: string = '▪';
-    private _iconColor: string = '#ffffff';
-    private _isLast: boolean = false;
-    private _isFocused: boolean = false;
+    private _label: string;
+    private _labelColor: string;
+    private _icon: string;
+    private _iconColor: string;
+    private _isLast: boolean;
+    private _isFocused: boolean;
+    private _bottomBorder: boolean;
+
     constructor(
         ctx: RenderContext,
         options: BoxOptions & {
@@ -24,6 +25,7 @@ class ConsoleButtonRenderable extends BoxRenderable {
             icon?: string;
             iconColor?: string;
             isFocused?: boolean;
+            bottomBorder?: boolean;
         }
     ) {
         super(ctx, {
@@ -32,28 +34,29 @@ class ConsoleButtonRenderable extends BoxRenderable {
             shouldFill: false,
         });
 
-        if (options.label) {
-            this._label = options.label;
-        }
+        const {
+            label = 'Button',
+            labelColor = '#ffffff',
+            icon = '▪',
+            iconColor = '#ffffff',
+            isLast = false,
+            isFocused = false,
+            bottomBorder = true,
+        } = options;
 
-        if (options.isLast) {
-            this._isLast = options.isLast;
-        }
+        this._label = label;
+        this._labelColor = labelColor;
+        this._icon = icon;
+        this._iconColor = iconColor;
+        this._isLast = isLast;
+        this._isFocused = isFocused;
+        this._bottomBorder = bottomBorder;
+    }
 
-        if (options.labelColor) {
-            this._labelColor = options.labelColor;
-        }
-
-        if (options.icon) {
-            this._icon = options.icon;
-        }
-
-        if (options.iconColor) {
-            this._iconColor = options.iconColor;
-        }
-
-        if (options.isFocused) {
-            this._isFocused = options.isFocused;
+    private updateProperty<T>(currentValue: T, newValue: T, setter: () => void): void {
+        if (currentValue !== newValue) {
+            setter();
+            this.requestRender();
         }
     }
 
@@ -62,7 +65,6 @@ class ConsoleButtonRenderable extends BoxRenderable {
 
         this.drawBackground(buffer);
         this.drawCustomBorder(buffer, topOffset, this._isFocused);
-        // this.drawLabel(buffer, topOffset);
     }
 
     private drawBackground(buffer: OptimizedBuffer) {
@@ -95,7 +97,7 @@ class ConsoleButtonRenderable extends BoxRenderable {
         );
 
         // bottom line border only on focused
-        if (this._isLast) {
+        if (this._isLast && this._bottomBorder) {
             buffer.drawText(
                 '─'.repeat(this.width - 2),
                 x + 1,
@@ -119,10 +121,9 @@ class ConsoleButtonRenderable extends BoxRenderable {
     }
 
     set isLast(value: boolean) {
-        if (this._isLast !== value) {
+        this.updateProperty(this._isLast, value, () => {
             this._isLast = value;
-            this.requestRender();
-        }
+        });
     }
 
     get isFocused(): boolean {
@@ -130,10 +131,9 @@ class ConsoleButtonRenderable extends BoxRenderable {
     }
 
     set isFocused(value: boolean) {
-        if (this._isFocused !== value) {
+        this.updateProperty(this._isFocused, value, () => {
             this._isFocused = value;
-            this.requestRender();
-        }
+        });
     }
 
     get labelColor(): string {
@@ -141,10 +141,9 @@ class ConsoleButtonRenderable extends BoxRenderable {
     }
 
     set labelColor(value: string) {
-        if (this._labelColor !== value) {
+        this.updateProperty(this._labelColor, value, () => {
             this._labelColor = value;
-            this.requestRender();
-        }
+        });
     }
 
     get icon(): string {
@@ -152,10 +151,9 @@ class ConsoleButtonRenderable extends BoxRenderable {
     }
 
     set icon(value: string) {
-        if (this._icon !== value) {
+        this.updateProperty(this._icon, value, () => {
             this._icon = value;
-            this.requestRender();
-        }
+        });
     }
 
     get iconColor(): string {
@@ -163,21 +161,18 @@ class ConsoleButtonRenderable extends BoxRenderable {
     }
 
     set iconColor(value: string) {
-        if (this._iconColor !== value) {
+        this.updateProperty(this._iconColor, value, () => {
             this._iconColor = value;
-            this.requestRender();
-        }
+        });
     }
 }
 
-// TypeScript module augmentation for proper typing
 declare module '@opentui/react' {
     interface OpenTUIComponents {
         consoleButton: typeof ConsoleButtonRenderable;
     }
 }
 
-// Extend the component catalogue
 export function registerConsoleButton() {
     extend({
         consoleButton: ConsoleButtonRenderable,
