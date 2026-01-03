@@ -16,10 +16,6 @@ import { FormTextField, type FormTextFieldProps } from './form-text-field';
 import { FormDropdown, type FormDropdownProps } from './form-dropdown';
 import { ActionPanelOverlay } from '../action-panel';
 
-// ============================================================================
-// Form Component
-// ============================================================================
-
 export interface FormProps {
     /** Form content (Form.Description, Form.TextField, Form.Dropdown) */
     children?: ReactNode;
@@ -39,19 +35,12 @@ export interface FormProps {
     enableCommandPanelShortcut?: boolean;
 }
 
-/** Step component types we recognize */
 const STEP_TYPES = [FormDescription, FormTextField, FormDropdown] as const;
 
-/**
- * Check if an element is a form step component
- */
 function isStepComponent(element: ReactElement): boolean {
     return STEP_TYPES.some(type => element.type === type);
 }
 
-/**
- * Main Form container component
- */
 export function Form({
     children,
     actions,
@@ -66,7 +55,6 @@ export function Form({
     const [isActionPanelOpen, setIsActionPanelOpen] = useState(false);
     const stepCountRef = useRef(0);
 
-    // Count and process step children
     const processedChildren = useMemo(() => {
         const steps: ReactElement[] = [];
         let stepIndex = 0;
@@ -83,7 +71,6 @@ export function Form({
 
         stepCountRef.current = steps.length;
 
-        // Clone with step props
         return steps.map((step, idx) =>
             cloneElement(step, {
                 _index: idx,
@@ -95,7 +82,6 @@ export function Form({
 
     const stepCount = stepCountRef.current;
 
-    // Navigation handlers
     const navigateNext = useCallback(() => {
         setFocusedStepIndex(i => (i + 1) % stepCount);
     }, [stepCount]);
@@ -119,9 +105,7 @@ export function Form({
         }
     }, [onSubmit, navigateNext]);
 
-    // Keyboard handling
     useKeyboard(key => {
-        // Don't handle keys when action panel is open
         if (isActionPanelOpen) {
             if (key.name === 'escape') {
                 closeActionPanel();
@@ -129,13 +113,11 @@ export function Form({
             return;
         }
 
-        // Escape key handler
         if (key.name === 'escape') {
             onEscape?.();
             return;
         }
 
-        // Tab navigation (always enabled)
         if (key.name === 'tab') {
             if (key.shift) {
                 navigatePrev();
@@ -145,19 +127,17 @@ export function Form({
             return;
         }
 
-        // Command panel shortcut (ctrl+k)
         if (enableCommandPanelShortcut && key.ctrl && key.name === 'k') {
             openActionPanel();
             return;
         }
 
-        // Submit shortcut (ctrl+return)
-        if (enableSubmitShortcut && key.ctrl && key.name === 'return') {
+        // Windows Terminal maps Ctrl+Return to Ctrl+J, so check both
+        if (enableSubmitShortcut && key.ctrl && (key.name === 'return' || key.name === 'j')) {
             submitForm();
         }
     });
 
-    // Context value
     const contextValue: FormContextValue = useMemo(
         () => ({
             focusedStepIndex,
@@ -197,7 +177,6 @@ export function Form({
                 )}
             </FormContextProvider>
 
-            {/* Loading indicator could go here */}
             {isLoading && (
                 <box marginTop={1}>
                     <text>Loading...</text>
@@ -207,15 +186,10 @@ export function Form({
     );
 }
 
-// ============================================================================
-// Compound Component Exports
-// ============================================================================
-
 Form.Description = FormDescription;
 Form.TextField = FormTextField;
 Form.Dropdown = FormDropdown;
 
-// Re-export types
 export type { FormDescriptionProps } from './form-description';
 export type { FormTextFieldProps } from './form-text-field';
 export type {

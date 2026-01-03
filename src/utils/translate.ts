@@ -1,3 +1,8 @@
+/** @section DEPRECATED */
+/**
+ * @description This file is no longer used and will be removed in the future.
+ */
+
 import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';

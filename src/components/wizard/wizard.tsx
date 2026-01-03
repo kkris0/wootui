@@ -6,13 +6,6 @@ import { ActionPanelOverlay } from '../action-panel';
 import type { WizardProps, WizardStepState, WizardStepContext } from './types';
 import { COLORS } from '../form/constants';
 
-/**
- * Wizard component for step-by-step progression with async step submission
- *
- * - Shows completed steps + active step; hides future steps
- * - ctrl+return submits the focused step and advances immediately
- * - Next step is locked until previous step succeeds
- */
 export function Wizard<TValues extends object>({
     steps,
     initialValues,
@@ -165,7 +158,8 @@ export function Wizard<TValues extends object>({
             return;
         }
 
-        if (key.ctrl && key.name === 'return') {
+        // Windows Terminal maps Ctrl+Return to Ctrl+J, so check both
+        if (key.ctrl && (key.name === 'return' || key.name === 'j')) {
             submitFocusedStep();
         }
     });

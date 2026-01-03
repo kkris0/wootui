@@ -45,8 +45,6 @@ const LabelValue = ({
     </box>
 );
 
-// --- Configuration Constants ---
-
 const DEFAULT_SEO_META = [
     'Meta: rank_math_description',
     'Meta: rank_math_focus_keyword',
@@ -61,8 +59,6 @@ const WPML_INTERNAL_COLUMNS: readonly string[] = [
 ];
 
 const FIXED_COLUMNS = ['Name', 'Short description', 'Description', 'Tags'];
-
-// --- Types ---
 
 interface TranslateWizardValues {
     csvPath: string;
@@ -113,17 +109,14 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     throw new Error('CSV path is required');
                 }
 
-                // 1. Parse the CSV
                 const summary = await wooCsvParser.parseWooProductsCsv(values.csvPath);
 
-                // 2. Calculate Default Selections
                 const metaHeaders = summary.headers.filter(h => h.startsWith('Meta:'));
 
                 const defaultSelection = [
                     ...metaHeaders.filter(h => DEFAULT_SEO_META.includes(h)), // Select only specific SEO meta
                 ];
 
-                // 3. Update Wizard State
                 ctx.setValue('selectedMetaColumns', defaultSelection);
 
                 return summary;
@@ -175,9 +168,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         new Set(summary.attributeColumnMap.map(a => `Attribute ${a.attributeNum}`))
                     );
 
-                    {
-                        /* Sort meta and put default on top */
-                    }
                     const sortedMeta = availableMeta.sort((a, b) => {
                         if (DEFAULT_SEO_META.includes(a)) return -1;
                         if (DEFAULT_SEO_META.includes(b)) return -1;
@@ -186,7 +176,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
 
                     return (
                         <box flexDirection="column">
-                            {/* 1. Summary Stats Header */}
                             <box
                                 flexDirection="row"
                                 marginBottom={1}
@@ -217,7 +206,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                                 borderStyle="single"
                             ></box>
 
-                            {/* 2. Fixed Columns Info */}
                             <box flexDirection="column" marginTop={1} marginBottom={1}>
                                 <text attributes={TextAttributes.BOLD}>
                                     Fixed Columns (Always Included):
@@ -227,7 +215,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                                 </text>
                             </box>
 
-                            {/* 3. Attributes Description (Static) */}
                             <box flexDirection="column" marginBottom={1}>
                                 <text attributes={TextAttributes.BOLD}>
                                     {`Attributes Found (${uniqueAttributes.length}):`}
@@ -239,7 +226,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                                 </text>
                             </box>
 
-                            {/* 3. Interactive Selection Dropdown */}
                             {ctx.isFocused && (
                                 <>
                                     <Form.Dropdown
@@ -400,7 +386,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
 
                 const { parseSummary } = step2Data;
 
-                // Prepare products for translation based on selected languages and overrides
                 const { productsByLanguage, allUniqueAttributeNames } =
                     await wooCsvParser.prepareProductsForTranslation(
                         parseSummary.attributeColumnMap,
@@ -430,7 +415,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     throw new Error('Model ID is required');
                 }
 
-                // Compute estimates for all target languages
                 const estimatesByLanguage = new Map<LanguageCode, EstimateTokenAndPriceResult>();
                 for (const language of values.targetLanguages) {
                     const productsFlat = productsByLanguage.get(language) ?? [];
@@ -444,7 +428,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     estimatesByLanguage.set(language, estimate);
                 }
 
-                // Return carry data for subsequent steps
                 const carryData: CarryData = {
                     parseSummary,
                     productsByLanguage,
@@ -480,7 +463,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 }
 
                 if (prevState?.status === 'success' && carryData) {
-                    // Calculate totals across all languages
                     let totalTokens = 0;
                     let totalPrice = 0;
 
@@ -546,7 +528,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                 const carryData = context.previousStepState?.data as CarryData | undefined;
                 if (!carryData) throw new Error('Missing carry data from previous step');
 
-                // Pass carry data forward for the translate step
                 return { ...carryData, confirmed: true };
             },
         },
@@ -621,7 +602,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     throw new Error('API key is required');
                 }
 
-                // Ensure output directory exists
                 fs.mkdirSync(outputDir, { recursive: true });
 
                 const languages = values.targetLanguages;
@@ -696,17 +676,33 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         const csv = Papa.unparse(finalRows);
                         fs.writeFileSync(outputPath, csv, 'utf8');
 
-                        // 5. Also save the original source products to the output directory
-                        const sourceProducts = carryData.parseSummary.productSourceTranslations;
-                        const sourceProductsCsv = Papa.unparse(sourceProducts);
-                        fs.writeFileSync(
-                            path.join(outputDir, `${inputBaseName}-source-products.csv`),
-                            sourceProductsCsv,
-                            'utf8'
-                        );
-
                         results.push({ language, outputPath });
                     }
+
+                    // we only want to keep the necessary columns of the source product translations
+                    const sourceProducts = carryData.parseSummary.productSourceTranslations.map(
+                        row => {
+                            return {
+                                ID: row.ID,
+                                Type: row.Type,
+                                [WpmlImportColumns.TranslationGroup]: row.SKU,
+                                [WpmlImportColumns.SourceLanguageCode]:
+                                    row[WpmlImportColumns.ImportLanguageCode],
+                                [WpmlImportColumns.ImportLanguageCode]:
+                                    row[WpmlImportColumns.SourceLanguageCode],
+                            };
+                        }
+                    );
+
+                    const sourceProductsCsv = Papa.unparse(sourceProducts);
+                    fs.writeFileSync(
+                        path.join(
+                            outputDir,
+                            `${path.basename(values.csvPath)}-source-products.csv`
+                        ),
+                        sourceProductsCsv,
+                        'utf8'
+                    );
 
                     toast.success(`Translation complete!`, {
                         description: `Translated ${results.length} file(s) saved.`,
