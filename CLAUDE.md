@@ -105,6 +105,31 @@ Located in `src/utils/`:
 - `StepBox` (`src/components/step-box.tsx`) - Styled container for wizard steps with status indicators
 - `Footer` (`src/components/footer.tsx`) - Bottom bar with keyboard shortcuts
 
+### Hooks
+
+**Custom Hooks Pattern:**
+- All custom hooks live in `src/hooks/` directory
+- Each hook is in its own file (e.g., `use-output-dir.ts`, `use-open-output-folder.ts`)
+- **DO NOT** use barrel exports (index.ts) for hooks - import directly from hook files
+- Hook naming: `use` prefix + descriptive name in kebab-case for files, camelCase for function
+- Hooks should be pure functions that encapsulate reusable logic
+
+**Example:**
+```typescript
+// Good: Direct import
+import { useOutputDir } from '../hooks/use-output-dir';
+
+// Bad: Barrel export
+import { useOutputDir } from '../hooks';
+```
+
+**Available Hooks:**
+- `useOutputDir` - Returns output directory with consistent default (~/Downloads)
+- `useOpenOutputFolder` - Returns function to open output folder in system file explorer
+- `useInputHandler` - Keyboard input handling with callbacks
+- `useForm` - Form state management
+- `useWizard` - Wizard state management
+
 ### OpenTUI-Specific Patterns
 
 **Critical Rules:**
@@ -158,9 +183,14 @@ Located in `src/utils/`:
 - TOON format is critical for preserving CSV structure through AI translation
 
 **Configuration:**
-- Stored via `conf` package in user's home directory
-- Settings: `apiKey`, `modelId`, `batchSize`, `outputDir`
+- Stored via `conf` package in user's home directory (`~/.config/wootui/config.json`)
+- Settings with defaults:
+  - `apiKey`: '' (empty, must be configured by user)
+  - `modelId`: 'gemini-2.5-pro'
+  - `batchSize`: 5
+  - `outputDir`: User's Downloads folder (cross-platform via `os.homedir()` + `path.join()`)
 - Access via `config.get()` and `config.set()`
+- Output directory defaults work seamlessly on macOS (`~/Downloads`), Linux (`~/Downloads`), and Windows (`C:\Users\username\Downloads`)
 
 **Windows Terminal Keyboard Behavior:**
 - Windows Terminal has a known issue where `Ctrl+Return` is not properly sent to applications

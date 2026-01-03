@@ -42,7 +42,7 @@ export function FormStep({ title, index, isFirst, isLast, children }: FormStepPr
                     {title}
                 </text>
             </box>
-            <box flexDirection="column" paddingTop={1}>
+            <box flexDirection="column">
                 <box>
                     {children}
                     <text key="spacer"> </text>

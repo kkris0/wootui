@@ -1,26 +1,30 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { TextAttributes } from '@opentui/core';
-import type { WizardStepDefinition } from '../components/wizard';
-import { Wizard } from '../components/wizard';
-import { Form } from '../components/form';
+import { toast } from '@opentui-ui/toast';
+import type Conf from 'conf';
+import Papa from 'papaparse';
 import { Action, ActionPanel } from '../components/action-panel';
 import { Footer } from '../components/footer';
+import { Form } from '../components/form';
+import { LabelValue } from '../components/label-value.tsx';
 import { Toggle } from '../components/toggle';
 import { TranslationMatrix } from '../components/translation-matrix';
-import { languageMap } from '../utils/language-map';
-import { wooCsvParser } from '../utils/woo-csv';
-import { LanguageCode } from '../types/language-code';
+import type { WizardStepDefinition } from '../components/wizard';
+import { Wizard } from '../components/wizard';
+import { useOpenOutputFolder } from '../hooks/use-open-output-folder';
+import { useOutputDir } from '../hooks/use-output-dir';
 import type { ConfigSchema } from '../types/config';
-import type Conf from 'conf';
-import { Spinner } from '../utils/spinner';
-import { toast } from '@opentui-ui/toast';
-import type { AttributeName } from '../utils/translate';
-import Papa from 'papaparse';
-import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
 import type { EstimateTokenAndPriceResult } from '../types/estimate-token-and-price-result.ts';
+import { LanguageCode } from '../types/language-code';
+import type { LanguageTranslationResult, TranslationResults } from '../types/translation-result';
 import type { WooCsvParseSummary } from '../types/woo-csv-parse-summary.ts';
-import { LabelValue } from '../components/label-value.tsx';
+import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
+import { GEMINI_PRICING } from '../utils/gemini-pricing';
+import { languageMap } from '../utils/language-map';
+import { Spinner } from '../utils/spinner';
+import type { AttributeName } from '../utils/translate';
+import { wooCsvParser } from '../utils/woo-csv';
 
 export interface MainScreenProps {
     onNavigateToSettings: () => void;
@@ -66,6 +70,9 @@ export interface MainScreenProps {
 }
 
 export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
+    const outputDir = useOutputDir(config);
+    const handleOpenOutputFolder = useOpenOutputFolder(config);
+
     const steps: WizardStepDefinition<TranslateWizardValues>[] = [
         {
             id: 'csv-path',
@@ -576,7 +583,6 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
 
                 const apiKey = config.get('apiKey');
                 const modelId = config.get('modelId');
-                const outputDir = config.get('outputDir') || './output';
 
                 if (!apiKey) {
                     toast.error('API key is required', {
@@ -584,6 +590,17 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     });
                     throw new Error('API key is required');
                 }
+
+                // Get pricing for the model
+                const modelPricing = GEMINI_PRICING[modelId as keyof typeof GEMINI_PRICING];
+                if (!modelPricing) {
+                    toast.error('Invalid model selected', {
+                        description: `Model "${modelId}" not found in pricing configuration`,
+                    });
+                    throw new Error(`Invalid model: ${modelId}`);
+                }
+                const priceInputModifier = modelPricing.base.input / 1_000_000;
+                const priceOutputModifier = modelPricing.base.output / 1_000_000;
 
                 fs.mkdirSync(outputDir, { recursive: true });
 
@@ -600,7 +617,7 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
 
                 const toastId = toast.loading(`Translating 0/${totalLanguages}...`);
 
-                const results: { language: LanguageCode; outputPath: string }[] = [];
+                const results: LanguageTranslationResult[] = [];
 
                 try {
                     for (let i = 0; i < languages.length; i++) {
@@ -626,12 +643,12 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         );
 
                         // 2. Translate products
-                        const { translatedProducts } = await wooCsvParser.translate(
+                        const { costBreakdown, translatedProducts } = await wooCsvParser.translate(
                             modelId,
                             estimate.systemPrompt,
                             estimate.prompt,
-                            0.5 / 1_000_000,
-                            3.0 / 1_000_000,
+                            priceInputModifier,
+                            priceOutputModifier,
                             apiKey
                         );
 
@@ -659,7 +676,26 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         const csv = Papa.unparse(finalRows);
                         fs.writeFileSync(outputPath, csv, 'utf8');
 
-                        results.push({ language, outputPath });
+                        // Extract token counts and cost from breakdown
+                        const inputTokens =
+                            costBreakdown.find(c => c.Type === 'Input tokens')?.Count ?? 0;
+                        const outputTokens =
+                            costBreakdown.find(c => c.Type === 'Output tokens')?.Count ?? 0;
+                        const reasoningTokens =
+                            costBreakdown.find(c => c.Type === 'Reasoning tokens')?.Count ?? 0;
+                        const languageCost = costBreakdown.reduce(
+                            (sum, item) => sum + parseFloat(item['Cost ($)']),
+                            0
+                        );
+
+                        results.push({
+                            language,
+                            outputPath,
+                            inputTokens,
+                            outputTokens,
+                            reasoningTokens,
+                            cost: languageCost,
+                        });
                     }
 
                     // we only want to keep the necessary columns of the source product translations
@@ -693,7 +729,18 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                         id: toastId,
                     });
 
-                    return { results };
+                    const translationResults: TranslationResults = {
+                        languageResults: results,
+                        outputDir,
+                        totalInputTokens: results.reduce((sum, r) => sum + r.inputTokens, 0),
+                        totalOutputTokens: results.reduce((sum, r) => sum + r.outputTokens, 0),
+                        totalReasoningTokens: results.reduce(
+                            (sum, r) => sum + r.reasoningTokens,
+                            0
+                        ),
+                        totalCost: results.reduce((sum, r) => sum + r.cost, 0),
+                    };
+                    return translationResults;
                 } catch (error) {
                     const errorMessage =
                         error instanceof Error ? error.message : 'Translation failed';
@@ -704,6 +751,101 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                     });
                     throw error;
                 }
+            },
+        },
+        {
+            id: 'results',
+            title: 'Results',
+            render: ctx => {
+                const prevState = ctx.previousStepState;
+                const results = prevState?.data as TranslationResults | undefined;
+
+                if (prevState?.status === 'running') {
+                    return <Spinner color="#3b82f6" label="Finalizing..." />;
+                }
+
+                if (prevState?.status === 'error') {
+                    return (
+                        <box flexDirection="column">
+                            <text fg="#ef4444" attributes={TextAttributes.BOLD}>
+                                Translation Failed
+                            </text>
+                            <text attributes={TextAttributes.DIM} marginTop={1}>
+                                {String(prevState.error ?? 'Unknown error')}
+                            </text>
+                        </box>
+                    );
+                }
+
+                if (prevState?.status === 'success' && results) {
+                    return (
+                        <box flexDirection="column">
+                            <text fg="#22c55e" attributes={TextAttributes.BOLD}>
+                                Translation Complete
+                            </text>
+
+                            <box flexDirection="row" columnGap={2} marginTop={1}>
+                                <LabelValue
+                                    label="Total Cost"
+                                    value={`$${results.totalCost.toFixed(4)}`}
+                                    color="#22c55e"
+                                />
+                                <LabelValue
+                                    label="Input Tokens"
+                                    value={results.totalInputTokens.toLocaleString()}
+                                />
+                                <LabelValue
+                                    label="Output Tokens"
+                                    value={results.totalOutputTokens.toLocaleString()}
+                                />
+                                {results.totalReasoningTokens > 0 && (
+                                    <LabelValue
+                                        label="Reasoning"
+                                        value={results.totalReasoningTokens.toLocaleString()}
+                                    />
+                                )}
+                            </box>
+
+                            <text attributes={TextAttributes.BOLD} marginTop={1}>
+                                Per-Language Results:
+                            </text>
+                            {results.languageResults.map(result => (
+                                <box key={result.language} flexDirection="column" marginTop={1}>
+                                    <box flexDirection="row" columnGap={2}>
+                                        <text fg="#c9a227" attributes={TextAttributes.BOLD}>
+                                            {languageMap[result.language] ?? result.language}
+                                        </text>
+                                        <text fg="#22c55e">${result.cost.toFixed(4)}</text>
+                                        <text attributes={TextAttributes.DIM}>
+                                            {result.inputTokens.toLocaleString()} in /{' '}
+                                            {result.outputTokens.toLocaleString()} out
+                                        </text>
+                                    </box>
+                                    <text attributes={TextAttributes.DIM} fg="#666666">
+                                        {result.outputPath}
+                                    </text>
+                                </box>
+                            ))}
+
+                            {/* Output Directory */}
+                            <box flexDirection="column" marginTop={1}>
+                                <text attributes={TextAttributes.DIM}>Output Directory:</text>
+                                <text fg="#c9a227" attributes={TextAttributes.BOLD}>
+                                    {results.outputDir}
+                                </text>
+                            </box>
+
+                            <box flexDirection="column" marginTop={1}>
+                                <text attributes={TextAttributes.DIM} fg="#666666">
+                                    Press Ctrl+O to open output folder | Escape to start new
+                                    translation
+                                </text>
+                            </box>
+                        </box>
+                    );
+                }
+
+                return <Spinner color="#3b82f6" label="Waiting for translation..." />;
             },
         },
     ];
@@ -725,6 +867,13 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                                 <Action.SubmitForm
                                     title="Continue"
                                     shortcut={{ modifiers: ['ctrl'], key: 'return' }}
+                                />
+                            </ActionPanel.Section>
+                            <ActionPanel.Section title="Results">
+                                <Action
+                                    title="Open Output Folder"
+                                    shortcut={{ modifiers: ['ctrl'], key: 'o' }}
+                                    onAction={handleOpenOutputFolder}
                                 />
                             </ActionPanel.Section>
                             <ActionPanel.Section title="Settings">

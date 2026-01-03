@@ -103,28 +103,28 @@ export function SettingsScreen({ config, onBack }: SettingsScreenProps) {
                 <Form.TextField
                     title="Model ID"
                     placeholder="gemini-2.5-pro"
-                    description="The model ID to use for the translation."
+                    description="Google Gemini model for AI translation. Affects translation quality and cost."
                     value={formState.modelId}
                     onChange={val => updateField('modelId', val)}
                 />
                 <Form.TextField
                     title="API Key"
                     placeholder="Enter your API key"
-                    description="Your API key for the translation service."
+                    description="Google AI Studio API key. Required to access Gemini translation service."
                     value={formState.apiKey}
                     onChange={val => updateField('apiKey', val)}
                 />
                 <Form.TextField
                     title="Batch Size"
                     placeholder="10"
-                    description="Number of products in each batch. Higher batch size means faster translation but more prone to errors."
+                    description="Products translated per API call. Higher = faster but less reliable (errors stop entire batch)."
                     value={formState.batchSize}
                     onChange={val => updateField('batchSize', val)}
                 />
                 <Form.TextField
                     title="Output Directory"
                     placeholder="~/Downloads"
-                    description="Directory where translated CSV files will be saved."
+                    description="Where WPML-ready translated CSVs are saved after translation completes."
                     value={formState.outputDir}
                     onChange={val => updateField('outputDir', val)}
                 />
