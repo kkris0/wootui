@@ -1,20 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { TextAttributes } from '@opentui/core';
-import { Wizard } from '../components/wizard';
 import type { WizardStepDefinition } from '../components/wizard';
+import { Wizard } from '../components/wizard';
 import { Form } from '../components/form';
-import { ActionPanel, Action } from '../components/action-panel';
+import { Action, ActionPanel } from '../components/action-panel';
 import { Footer } from '../components/footer';
 import { Toggle } from '../components/toggle';
 import { TranslationMatrix } from '../components/translation-matrix';
 import { languageMap } from '../utils/language-map';
-import {
-    wooCsvParser,
-    WpmlImportColumns,
-    type EstimateTokenAndPriceResult,
-    type WooCsvParseSummary,
-} from '../utils/woo-csv';
+import { wooCsvParser } from '../utils/woo-csv';
 import { LanguageCode } from '../types/language-code';
 import type { ConfigSchema } from '../types/config';
 import type Conf from 'conf';
@@ -22,28 +17,15 @@ import { Spinner } from '../utils/spinner';
 import { toast } from '@opentui-ui/toast';
 import type { AttributeName } from '../utils/translate';
 import Papa from 'papaparse';
+import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
+import type { EstimateTokenAndPriceResult } from '../types/estimate-token-and-price-result.ts';
+import type { WooCsvParseSummary } from '../types/woo-csv-parse-summary.ts';
+import { LabelValue } from '../components/label-value.tsx';
 
 export interface MainScreenProps {
     onNavigateToSettings: () => void;
     config: Conf<ConfigSchema>;
 }
-
-const LabelValue = ({
-    label,
-    value,
-    color = '#ffffff',
-}: {
-    label: string;
-    value: string | number;
-    color?: string;
-}) => (
-    <box flexDirection="column" marginRight={2}>
-        <text attributes={TextAttributes.DIM}>{label}</text>
-        <text fg={color} attributes={TextAttributes.BOLD}>
-            {String(value)}
-        </text>
-    </box>
-);
 
 const DEFAULT_SEO_META = [
     'Meta: rank_math_description',
@@ -686,7 +668,8 @@ export function MainScreen({ onNavigateToSettings, config }: MainScreenProps) {
                             return {
                                 ID: row.ID,
                                 Type: row.Type,
-                                [WpmlImportColumns.TranslationGroup]: row.SKU,
+                                [WpmlImportColumns.TranslationGroup]:
+                                    row[WpmlImportColumns.TranslationGroup],
                                 [WpmlImportColumns.SourceLanguageCode]:
                                     row[WpmlImportColumns.ImportLanguageCode],
                                 [WpmlImportColumns.ImportLanguageCode]:

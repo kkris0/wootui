@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import Papa from 'papaparse';
-import { AttibuteParser, MetaParser, type AttributeColMap } from './attibute_parser';
+import { AttibuteParser, type AttributeColMap, MetaParser } from './attibute_parser';
 import { createWooProductSchema, type WooRow } from './dynamic_schema';
 import { LanguageCode } from '../types/language-code';
 import { decode, encode, type JsonArray, type JsonObject, type JsonValue } from '@toon-format/toon';
 import { GoogleGenAI } from '@google/genai';
 import {
-    localAttributeLabelsColumnKey,
     type AttributeName,
+    localAttributeLabelsColumnKey,
     type ProductWithTranslationMeta,
 } from './translate';
 import slugify from 'slugify';
@@ -16,69 +16,11 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { extractCode } from './extract-code';
 import { geminiPrompt, geminiPromptAttributeNames, geminiSystemPrompt } from './prompts';
 import { estimateGeminiCost, GEMINI_PRICING } from './gemini-pricing';
-
-/**
- * WPML import column keys
- */
-export interface EstimateTokenAndPriceResult {
-    wordCount: number;
-    tokenCount: number;
-    estimatedPrice: {
-        total: number;
-        input: number;
-        output: number;
-        perWordTotal: number;
-        perWordInput: number;
-        perWordOutput: number;
-    };
-    encodedProducts: string;
-    systemPrompt: string;
-    prompt: string;
-}
-
-export enum WpmlImportColumns {
-    SourceLanguageCode = 'Meta: _wpml_import_source_language_code',
-    ImportLanguageCode = 'Meta: _wpml_import_language_code',
-    TranslationGroup = 'Meta: _wpml_import_translation_group',
-}
-
-/**
- * WPML fixed columns for import/export
- */
-export interface WpmlFixedColumns {
-    [WpmlImportColumns.SourceLanguageCode]: LanguageCode;
-    [WpmlImportColumns.ImportLanguageCode]: LanguageCode;
-    [WpmlImportColumns.TranslationGroup]: string;
-}
-
-/**
- * Summary of parsed WooCommerce CSV
- */
-export interface WooCsvParseSummary {
-    /** The parsed headers (the headers of the CSV) */
-    headers: string[];
-    /** Column map for attributes by their index in the header (ex. { attributeNum: '1', valueIndex: 1, nameIndex: 2 }) */
-    attributeColumnMap: AttributeColMap[];
-    /** Source products translations (source product aka translation, from which we translate to the target languages) */
-    productSourceTranslations: WooRow<WpmlFixedColumns>[];
-    /** Already translated products (the products that are already translated to the target languages - mapped by "Meta: _wpml_import_translation_group" to the source product) */
-    productExistingTranslations: WooRow<WpmlFixedColumns>[];
-    /** The products grouped by language they are to be translated to (key: language, value: products) */
-    productTranslationsPerLanguage: Map<LanguageCode, ProductWithTranslationMeta[]>;
-}
-
-/**
- * Error thrown when CSV parsing fails
- */
-export class WooCsvParseError extends Error {
-    constructor(
-        message: string,
-        public readonly code: 'FILE_NOT_FOUND' | 'INVALID_CSV' | 'VALIDATION_FAILED' | 'EMPTY_FILE'
-    ) {
-        super(message);
-        this.name = 'WooCsvParseError';
-    }
-}
+import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
+import type { WpmlFixedColumns } from '../types/wpml-fixed-columns.ts';
+import { WooCsvParseError } from '../types/woo-csv-parse-error.ts';
+import type { EstimateTokenAndPriceResult } from '../types/estimate-token-and-price-result.ts';
+import type { WooCsvParseSummary } from '../types/woo-csv-parse-summary.ts';
 
 class WooCsvParser {
     /**

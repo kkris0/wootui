@@ -51,7 +51,17 @@ The application uses a custom step-based wizard component (`src/components/wizar
 - `wizard-context.tsx` - Context provider for wizard state management
 - `wizard-step.tsx` - Individual step wrapper with status indicators
 - Steps are locked until previous step succeeds (async step submission)
-- Uses `WizardStepDefinition` with `render()` and `onSubmit()` lifecycle
+- Uses `WizardStepDefinition` with `render(ctx, recenterScrollbox)` and `onSubmit()` lifecycle
+
+**Wizard Centered Scrolling:**
+- The active/focused step is always centered vertically in the viewport
+- Uses a scrollbox with `focused={false}` to disable mouse scrolling (keyboard-only navigation)
+- Scrollbar is hidden via `verticalScrollbarOptions={{ visible: false }}`
+- Dynamic padding is applied to scrollbox content to enable centering at edges:
+  - Top padding = `(viewportHeight - firstStepHeight) / 2` allows first step to center
+  - Bottom padding = `(viewportHeight - lastStepHeight) / 2` allows last step to center
+- `recenterScrollbox()` callback is passed to step render functions for manual recentering when step content changes dynamically
+- Scrollbox ref (`ScrollBoxRenderable`) provides access to `scrollTo()`, `viewport.height`, and `content` for programmatic control
 
 ### Translation Pipeline
 Located in `src/utils/`:

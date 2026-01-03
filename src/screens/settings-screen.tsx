@@ -123,7 +123,7 @@ export function SettingsScreen({ config, onBack }: SettingsScreenProps) {
                 />
                 <Form.TextField
                     title="Output Directory"
-                    placeholder="./output"
+                    placeholder="~/Downloads"
                     description="Directory where translated CSV files will be saved."
                     value={formState.outputDir}
                     onChange={val => updateField('outputDir', val)}

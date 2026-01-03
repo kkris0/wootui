@@ -2,6 +2,8 @@ import { Toaster } from '@opentui-ui/toast/react';
 import { createCliRenderer } from '@opentui/core';
 import { createRoot } from '@opentui/react';
 import Conf from 'conf';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { useCallback, useState } from 'react';
 import { COLORS } from './components/form/constants';
 import { MainScreen } from './screens/main-screen';
@@ -17,7 +19,7 @@ const config = new Conf<ConfigSchema>({
         modelId: 'gemini-2.5-pro',
         apiKey: '',
         batchSize: 5,
-        outputDir: '',
+        outputDir: join(homedir(), 'Downloads'),
     },
 });
 
