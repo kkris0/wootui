@@ -1,5 +1,5 @@
 import { TextAttributes } from '@opentui/core';
-import { COLORS, ICONS, formatShortcut, type KeyboardShortcut } from '../form/constants';
+import { COLORS, ICONS, formatShortcut, type KeyboardShortcut } from '@/components/form/constants';
 
 export interface ActionItemProps {
     /** Action title */

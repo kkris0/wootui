@@ -1,26 +1,29 @@
 import fs from 'node:fs';
+import path from 'node:path';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { GoogleGenAI } from '@google/genai';
+import { decode, encode, type JsonArray, type JsonObject, type JsonValue } from '@toon-format/toon';
+import { generateText } from 'ai';
 import Papa from 'papaparse';
+import slugify from 'slugify';
+import type { EstimateTokenAndPriceResult } from '../types/estimate-token-and-price-result.ts';
+import { LanguageCode } from '../types/language-code';
+import type { LanguageTranslationResult } from '../types/translation-result.ts';
+import { WooCsvParseError } from '../types/woo-csv-parse-error.ts';
+import type { WooCsvParseSummary } from '../types/woo-csv-parse-summary.ts';
+import type { WpmlFixedColumns } from '../types/wpml-fixed-columns.ts';
+import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
 import { AttibuteParser, type AttributeColMap, MetaParser } from './attibute_parser';
 import { createWooProductSchema, type WooRow } from './dynamic_schema';
-import { LanguageCode } from '../types/language-code';
-import { decode, encode, type JsonArray, type JsonObject, type JsonValue } from '@toon-format/toon';
-import { GoogleGenAI } from '@google/genai';
+import { extractCode } from './extract-code';
+import { estimateGeminiCost, GEMINI_PRICING } from './gemini-pricing';
+import { geminiPrompt, geminiPromptAttributeNames, geminiSystemPrompt } from './prompts';
 import {
     type AttributeName,
     localAttributeLabelsColumnKey,
     type ProductWithTranslationMeta,
 } from './translate';
-import slugify from 'slugify';
-import { generateText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { extractCode } from './extract-code';
-import { geminiPrompt, geminiPromptAttributeNames, geminiSystemPrompt } from './prompts';
-import { estimateGeminiCost, GEMINI_PRICING } from './gemini-pricing';
-import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
-import type { WpmlFixedColumns } from '../types/wpml-fixed-columns.ts';
-import { WooCsvParseError } from '../types/woo-csv-parse-error.ts';
-import type { EstimateTokenAndPriceResult } from '../types/estimate-token-and-price-result.ts';
-import type { WooCsvParseSummary } from '../types/woo-csv-parse-summary.ts';
+import { appConfig } from './config.ts';
 
 class WooCsvParser {
     /**
@@ -271,11 +274,20 @@ class WooCsvParser {
 
     public async estimatePriceAndPreparePromptsForLanguage(
         productsFlat: Record<string, string | undefined>[],
-        batchSize: number,
-        targetLanguage: LanguageCode,
-        apiKey: string,
-        modelId: string
+        targetLanguage: LanguageCode
     ): Promise<EstimateTokenAndPriceResult> {
+        const apiKey = appConfig.get('apiKey');
+        const modelId = appConfig.get('modelId');
+        const batchSize = appConfig.get('batchSize');
+        if (!apiKey) {
+            throw new Error('API key is required. Please configure the API key in Settings.');
+        }
+        if (!modelId) {
+            throw new Error('Model ID is required. Please configure the model ID in Settings.');
+        }
+        if (!batchSize) {
+            throw new Error('Batch size is required. Please configure the batch size in Settings.');
+        }
         const client = new GoogleGenAI({
             apiKey,
         });
@@ -371,12 +383,10 @@ class WooCsvParser {
     }
 
     public async translate(
-        modelId: string,
         systemPrompt: string,
         prompt: string,
         priceInputModifier: number,
-        priceOutputModifier: number,
-        apiKey: string
+        priceOutputModifier: number
     ): Promise<{
         costBreakdown: {
             Type: string;
@@ -386,6 +396,14 @@ class WooCsvParser {
         }[];
         translatedProducts: Record<string, string | undefined>[];
     }> {
+        const apiKey = appConfig.get('apiKey');
+        const modelId = appConfig.get('modelId');
+        if (!apiKey) {
+            throw new Error('API key is required. Please configure the API key in Settings.');
+        }
+        if (!modelId) {
+            throw new Error('Model ID is required. Please configure the model ID in Settings.');
+        }
         const google = createGoogleGenerativeAI({ apiKey });
         const result = await generateText({
             model: google(modelId),
@@ -479,9 +497,12 @@ class WooCsvParser {
 
     public async translateAttributeNames(
         allUniqueAttributeNames: AttributeName[],
-        targetLanguages: LanguageCode,
-        apiKey: string
+        targetLanguages: LanguageCode
     ): Promise<AttributeName[]> {
+        const apiKey = appConfig.get('apiKey');
+        if (!apiKey) {
+            throw new Error('API key is required. Please configure the API key in Settings.');
+        }
         console.log(`Translating ${allUniqueAttributeNames.length} attribute names...`);
 
         const prompt = geminiPromptAttributeNames(targetLanguages, allUniqueAttributeNames);
@@ -565,6 +586,189 @@ class WooCsvParser {
         });
 
         return preppededForReinsertion;
+    }
+
+    /**
+     * Prepare token and price estimates for all target languages
+     *
+     * @param productsByLanguage - Map of language code to products to translate
+     * @param targetLanguages - Array of target language codes
+     * @param batchSize - Number of products per batch
+     * @param apiKey - Gemini API key
+     * @param modelId - Gemini model ID
+     * @returns Map of language code to estimate result
+     */
+    public async prepareLanguageEstimates(
+        productsByLanguage: Map<LanguageCode, Record<string, string | undefined>[]>,
+        targetLanguages: LanguageCode[]
+    ): Promise<Map<LanguageCode, EstimateTokenAndPriceResult>> {
+        const estimatesByLanguage = new Map<LanguageCode, EstimateTokenAndPriceResult>();
+
+        for (const language of targetLanguages) {
+            const productsFlat = productsByLanguage.get(language) ?? [];
+            const estimate = await this.estimatePriceAndPreparePromptsForLanguage(
+                productsFlat,
+                language
+            );
+            estimatesByLanguage.set(language, estimate);
+        }
+
+        return estimatesByLanguage;
+    }
+
+    /**
+     * Validate translation configuration
+     *
+     * @param apiKey - Gemini API key
+     * @param modelId - Gemini model ID
+     * @returns Validated config with pricing modifiers
+     * @throws Error if configuration is invalid
+     */
+    public validateTranslationConfig(): {
+        priceInputModifier: number;
+        priceOutputModifier: number;
+    } {
+        const apiKey = appConfig.get('apiKey');
+        const modelId = appConfig.get('modelId');
+        if (!apiKey) {
+            throw new Error('API key is required. Please configure the API key in Settings.');
+        }
+
+        if (!modelId) {
+            throw new Error('Model ID is required. Please configure the model ID in Settings.');
+        }
+
+        const modelPricing = GEMINI_PRICING[modelId as keyof typeof GEMINI_PRICING];
+        if (!modelPricing) {
+            throw new Error(`Invalid model: ${modelId}. Model not found in pricing configuration.`);
+        }
+
+        const priceInputModifier = modelPricing.base.input / 1_000_000;
+        const priceOutputModifier = modelPricing.base.output / 1_000_000;
+
+        return { priceInputModifier, priceOutputModifier };
+    }
+
+    /**
+     * Translate all products for multiple languages
+     *
+     * @param params - Translation parameters
+     * @param onProgress - Progress callback for each language
+     * @returns Array of language translation results
+     */
+    public async translateAllLanguages(params: {
+        languages: LanguageCode[];
+        carryData: {
+            parseSummary: WooCsvParseSummary;
+            allUniqueAttributeNames: AttributeName[];
+            estimatesByLanguage: Map<LanguageCode, EstimateTokenAndPriceResult>;
+        };
+        csvPath: string;
+        outputDir: string;
+        priceInputModifier: number;
+        priceOutputModifier: number;
+        onProgress?: (current: number, total: number, language: LanguageCode) => void;
+    }): Promise<LanguageTranslationResult[]> {
+        const {
+            languages,
+            carryData,
+            csvPath,
+            outputDir,
+            priceInputModifier,
+            priceOutputModifier,
+            onProgress,
+        } = params;
+
+        const results: LanguageTranslationResult[] = [];
+
+        for (let i = 0; i < languages.length; i++) {
+            const language = languages[i];
+            console.log(`Translating language: ${language}`);
+            if (!language) continue;
+
+            onProgress?.(i + 1, languages.length, language);
+
+            const estimate = carryData.estimatesByLanguage.get(language);
+            if (!estimate) {
+                throw new Error(`No estimate found for language: ${language}`);
+            }
+
+            const translatedAttributeNames = await this.translateAttributeNames(
+                carryData.allUniqueAttributeNames,
+                language
+            );
+
+            const { costBreakdown, translatedProducts } = await this.translate(
+                estimate.systemPrompt,
+                estimate.prompt,
+                priceInputModifier,
+                priceOutputModifier
+            );
+
+            const finalRows = await this.postProcessTranslatedProducts(
+                carryData.parseSummary.productSourceTranslations,
+                translatedAttributeNames,
+                translatedProducts,
+                carryData.allUniqueAttributeNames,
+                language
+            );
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const inputBaseName = path.basename(csvPath, path.extname(csvPath));
+            const outputFileName = `${inputBaseName}-${language}-${timestamp}.csv`;
+            const outputPath = path.join(outputDir, outputFileName);
+
+            const csv = Papa.unparse(finalRows);
+            fs.writeFileSync(outputPath, csv, 'utf8');
+
+            const inputTokens = costBreakdown.find(c => c.Type === 'Input tokens')?.Count ?? 0;
+            const outputTokens = costBreakdown.find(c => c.Type === 'Output tokens')?.Count ?? 0;
+            const reasoningTokens =
+                costBreakdown.find(c => c.Type === 'Reasoning tokens')?.Count ?? 0;
+            const languageCost = costBreakdown.reduce(
+                (sum, item) => sum + parseFloat(item['Cost ($)']),
+                0
+            );
+
+            results.push({
+                language,
+                outputPath,
+                inputTokens,
+                outputTokens,
+                reasoningTokens,
+                cost: languageCost,
+            });
+        }
+
+        return results;
+    }
+
+    /**
+     * Export source products CSV with WPML metadata
+     *
+     * @param sourceProducts - Source product translations
+     * @param csvPath - Original CSV file path
+     * @param outputDir - Output directory
+     */
+    public exportSourceProducts(
+        sourceProducts: WooRow<WpmlFixedColumns>[],
+        csvPath: string,
+        outputDir: string
+    ): void {
+        const sourceProductsSubset = sourceProducts.map(row => ({
+            ID: row.ID,
+            Type: row.Type,
+            [WpmlImportColumns.TranslationGroup]: row[WpmlImportColumns.TranslationGroup],
+            [WpmlImportColumns.SourceLanguageCode]: row[WpmlImportColumns.ImportLanguageCode],
+            [WpmlImportColumns.ImportLanguageCode]: row[WpmlImportColumns.SourceLanguageCode],
+        }));
+
+        const sourceProductsCsv = Papa.unparse(sourceProductsSubset);
+        fs.writeFileSync(
+            path.join(outputDir, `${path.basename(csvPath)}-source-products.csv`),
+            sourceProductsCsv,
+            'utf8'
+        );
     }
 }
 

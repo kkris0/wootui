@@ -1,4 +1,4 @@
-import { LanguageCode } from '../types/language-code';
+import { LanguageCode } from '@/types/language-code';
 
 export const languageMap: Record<LanguageCode, string> = {
     [LanguageCode.Slovenian]: 'Slovenian',

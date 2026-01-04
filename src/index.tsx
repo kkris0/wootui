@@ -1,27 +1,13 @@
 import { Toaster } from '@opentui-ui/toast/react';
 import { createCliRenderer } from '@opentui/core';
 import { createRoot } from '@opentui/react';
-import Conf from 'conf';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
 import { useCallback, useState } from 'react';
 import { COLORS } from './components/form/constants';
 import { MainScreen } from './screens/main-screen';
 import { SettingsScreen } from './screens/settings-screen';
-import type { ConfigSchema } from './types/config';
 import { registerConsoleButton } from './components/step-box';
 
 type Screen = 'main' | 'settings';
-
-const config = new Conf<ConfigSchema>({
-    projectName: 'wootui',
-    defaults: {
-        modelId: 'gemini-2.5-pro',
-        apiKey: '',
-        batchSize: 5,
-        outputDir: join(homedir(), 'Downloads'),
-    },
-});
 
 registerConsoleButton();
 
@@ -46,9 +32,9 @@ function App() {
             padding={1}
         >
             {activeScreen === 'main' ? (
-                <MainScreen onNavigateToSettings={navigateToSettings} config={config} />
+                <MainScreen onNavigateToSettings={navigateToSettings} />
             ) : (
-                <SettingsScreen config={config} onBack={navigateToMain} />
+                <SettingsScreen onBack={navigateToMain} />
             )}
 
             <Toaster

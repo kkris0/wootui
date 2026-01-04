@@ -1,6 +1,6 @@
 import { TextAttributes } from '@opentui/core';
 import { type ReactNode } from 'react';
-import { Spinner } from '../../utils/spinner';
+import { Spinner } from '@/utils/spinner';
 import type { WizardStepStatusType } from './types';
 import { useWizardContext } from './wizard-context';
 

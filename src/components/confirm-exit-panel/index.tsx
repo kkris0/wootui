@@ -1,8 +1,8 @@
 import { TextAttributes } from '@opentui/core';
 import { useKeyboard } from '@opentui/react';
 import { useCallback, useState } from 'react';
-import { ActionItem } from '../action-panel/action-item';
-import { COLORS } from '../form/constants';
+import { ActionItem } from '@/components/action-panel/action-item';
+import { COLORS } from '@/components/form/constants';
 
 const PANEL_WIDTH = 50;
 

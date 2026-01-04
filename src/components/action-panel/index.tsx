@@ -9,7 +9,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { COLORS, type KeyboardShortcut } from '../form/constants';
+import { COLORS, type KeyboardShortcut } from '@/components/form/constants';
 import { ActionItem } from './action-item';
 import { ActionPanelContextProvider, type ActionPanelContextValue } from './action-panel-context';
 

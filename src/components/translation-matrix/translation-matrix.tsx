@@ -1,10 +1,10 @@
 import { TextAttributes } from '@opentui/core';
 import { useMemo } from 'react';
-import type { LanguageCode } from '../../types/language-code';
+import type { LanguageCode } from '@/types/language-code';
 import { COLORS } from '../form/constants';
-import { languageMap } from '../../utils/language-map';
-import { WpmlImportColumns } from '../../types/wpml-import-columns.ts';
-import type { WooCsvParseSummary } from '../../types/woo-csv-parse-summary.ts';
+import { languageMap } from '@/utils/language-map';
+import { WpmlImportColumns } from '@/types/wpml-import-columns';
+import type { WooCsvParseSummary } from '@/types/woo-csv-parse-summary';
 
 export interface TranslationMatrixProps {
     parseSummary: WooCsvParseSummary;

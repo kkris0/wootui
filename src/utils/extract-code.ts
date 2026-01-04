@@ -1,4 +1,3 @@
-// main();
 export function extractCode(response: string): string {
     // Regex explanation:
     // ```           -> Matches the opening triple backticks

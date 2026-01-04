@@ -1,4 +1,4 @@
-import { LanguageCode } from '../types/language-code';
+import { LanguageCode } from '@/types/language-code';
 import { languageMap } from './language-map';
 import type { AttributeName } from './translate';
 

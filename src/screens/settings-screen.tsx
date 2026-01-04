@@ -1,12 +1,10 @@
-import type Conf from 'conf';
 import { useCallback, useMemo, useState } from 'react';
-import { ConfirmExitPanel, type ConfirmAction } from '../components/confirm-exit-panel';
-import { Footer } from '../components/footer';
-import { Form } from '../components/form';
-import type { ConfigSchema } from '../types/config';
+import { ConfirmExitPanel, type ConfirmAction } from '@/components/confirm-exit-panel';
+import { Footer } from '@/components/footer';
+import { Form } from '@/components/form';
+import { appConfig } from '@/utils/config';
 
 export interface SettingsScreenProps {
-    config: Conf<ConfigSchema>;
     onBack: () => void;
 }
 
@@ -17,24 +15,24 @@ interface SettingsFormState {
     outputDir: string;
 }
 
-export function SettingsScreen({ config, onBack }: SettingsScreenProps) {
+export function SettingsScreen({ onBack }: SettingsScreenProps) {
     const [formState, setFormState] = useState<SettingsFormState>(() => ({
-        modelId: config.get('modelId'),
-        apiKey: config.get('apiKey'),
-        batchSize: String(config.get('batchSize')),
-        outputDir: config.get('outputDir'),
+        modelId: appConfig.get('modelId'),
+        apiKey: appConfig.get('apiKey'),
+        batchSize: String(appConfig.get('batchSize')),
+        outputDir: appConfig.get('outputDir'),
     }));
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const initialValues = useMemo<SettingsFormState>(
         () => ({
-            modelId: config.get('modelId'),
-            apiKey: config.get('apiKey'),
-            batchSize: String(config.get('batchSize')),
-            outputDir: config.get('outputDir'),
+            modelId: appConfig.get('modelId'),
+            apiKey: appConfig.get('apiKey'),
+            batchSize: String(appConfig.get('batchSize')),
+            outputDir: appConfig.get('outputDir'),
         }),
-        [config]
+        []
     );
 
     const isDirty = useMemo(() => {
@@ -47,12 +45,12 @@ export function SettingsScreen({ config, onBack }: SettingsScreenProps) {
     }, [formState, initialValues]);
 
     const handleSave = useCallback(() => {
-        config.set('modelId', formState.modelId);
-        config.set('apiKey', formState.apiKey);
-        config.set('batchSize', Number(formState.batchSize) || 5);
-        config.set('outputDir', formState.outputDir);
+        appConfig.set('modelId', formState.modelId);
+        appConfig.set('apiKey', formState.apiKey);
+        appConfig.set('batchSize', Number(formState.batchSize) || 5);
+        appConfig.set('outputDir', formState.outputDir);
         onBack();
-    }, [config, formState, onBack]);
+    }, [formState, onBack]);
 
     const handleConfirmAction = useCallback(
         (action: ConfirmAction) => {

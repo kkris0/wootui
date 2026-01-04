@@ -19,11 +19,11 @@ import {
     ActionPanelSection,
     type ActionPanelSectionProps,
     type ActionPanelProps,
-} from '../action-panel';
-import type { KeyboardShortcut } from '../form/constants';
-import type { WizardProps, WizardStepContext, WizardStepState } from './types';
-import { WizardContextProvider, type WizardContextValue } from './wizard-context';
-import { WizardStep } from './wizard-step';
+} from '@/components/action-panel';
+import type { KeyboardShortcut } from '@/components/form/constants';
+import type { WizardProps, WizardStepContext, WizardStepState } from '@/components/wizard/types';
+import { WizardContextProvider, type WizardContextValue } from '@/components/wizard/wizard-context';
+import { WizardStep } from '@/components/wizard/wizard-step';
 
 interface ParsedAction {
     title: string;
