@@ -44,3 +44,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Output directory
 output/
+
+# Version file (build artifact)
+src/utils/version.ts

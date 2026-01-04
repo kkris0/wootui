@@ -1,10 +1,10 @@
-export { Wizard } from './wizard';
-export { WizardStep } from './wizard-step';
-export { useWizardContext, WizardContextProvider } from './wizard-context';
 export type {
     WizardProps,
+    WizardStepContext,
     WizardStepDefinition,
     WizardStepState,
     WizardStepStatusType as WizardStepStatus,
-    WizardStepContext,
 } from './types';
+export { Wizard } from './wizard';
+export { useWizardContext, WizardContextProvider } from './wizard-context';
+export { WizardStep } from './wizard-step';

@@ -1,5 +1,4 @@
 import { Action, ActionPanel } from '@/components/action-panel';
-import { Footer } from '@/components/footer';
 import {
     createColumnsSelectionStep,
     createCsvPathStep,
@@ -65,8 +64,6 @@ export function MainScreen({ onNavigateToSettings }: MainScreenProps) {
                     }
                 />
             </box>
-
-            <Footer configurationOpen={false} />
         </box>
     );
 }

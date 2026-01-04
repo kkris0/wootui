@@ -2,7 +2,7 @@ import { TextAttributes } from '@opentui/core';
 import { toast } from '@opentui-ui/toast';
 import type { LanguageCode } from '@/types/language-code';
 import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/utils/spinner';
+import { Spinner } from '@/components/spinner';
 import { wooCsvParser } from '@/utils/woo-csv';
 import { Form } from '@/components/form';
 import { Toggle } from '@/components/toggle';

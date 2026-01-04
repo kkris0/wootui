@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core';
 import type { TranslationResults } from '@/types/translation-result';
 import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/utils/spinner';
+import { Spinner } from '@/components/spinner';
 import { LabelValue } from '@/components/label-value';
 import type { WizardStepDefinition } from '@/components/wizard';
 import { WizardStepStatus } from '@/components/wizard/types';

@@ -24,7 +24,25 @@ bun run build:linux-arm64   # Compile for Linux ARM64
 bunx @biomejs/biome check .         # Run linter
 bunx @biomejs/biome check --write . # Fix linting issues
 bunx @biomejs/biome format .        # Format code
+
+# Release
+bun version patch    # Bump patch version (e.g., 1.0.0 -> 1.0.1)
+bun version minor    # Bump minor version (e.g., 1.0.0 -> 1.1.0)
+bun version major    # Bump major version (e.g., 1.0.0 -> 2.0.0)
+bun version 1.2.3   # Set specific version
 ```
+
+**Release Process:**
+1. Make code changes and commit: `git add . && git commit -m "feat: new feature"`
+2. Update version and create tag: `bun version patch/minor/major`
+3. Push commits and tags: `git push && git push --tags`
+4. GitHub Actions automatically builds release on tag push (triggers on `v*` tags)
+
+**Notes:**
+- `bun version` updates `package.json` version, creates a commit, and creates a git tag
+- Version is displayed in bottom-right corner of both MainScreen and SettingsScreen
+- Release tags should use `v` prefix (e.g., `v1.0.0`) - this is handled automatically by `bun version`
+- Version file (`src/utils/version.ts`) is generated at build time and should not be committed
 
 ## Architecture
 

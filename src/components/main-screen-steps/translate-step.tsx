@@ -3,7 +3,7 @@ import { TextAttributes } from '@opentui/core';
 import { toast } from '@opentui-ui/toast';
 import type { TranslationResults } from '@/types/translation-result';
 import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/utils/spinner';
+import { Spinner } from '@/components/spinner';
 import { wooCsvParser } from '@/utils/woo-csv';
 import type { WizardStepDefinition } from '@/components/wizard';
 import { WizardStepStatus } from '@/components/wizard/types';

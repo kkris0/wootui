@@ -3,7 +3,7 @@ import type { LanguageCode } from '@/types/language-code';
 import type { WooCsvParseSummary } from '@/types/woo-csv-parse-summary';
 import { WpmlImportColumns } from '@/types/wpml-import-columns';
 import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/utils/spinner';
+import { Spinner } from '@/components/spinner';
 import { Form } from '../form';
 import { LabelValue } from '@/components/label-value';
 import type { WizardStepDefinition } from '@/components/wizard';

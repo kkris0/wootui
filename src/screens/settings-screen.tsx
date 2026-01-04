@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ConfirmExitPanel, type ConfirmAction } from '@/components/confirm-exit-panel';
-import { Footer } from '@/components/footer';
+import { type ConfirmAction, ConfirmExitPanel } from '@/components/confirm-exit-panel';
 import { Form } from '@/components/form';
 import { appConfig } from '@/utils/config';
 
@@ -127,8 +126,6 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                     onChange={val => updateField('outputDir', val)}
                 />
             </Form>
-
-            <Footer configurationOpen={true} />
 
             {isConfirmOpen && <ConfirmExitPanel onAction={handleConfirmAction} />}
         </box>
