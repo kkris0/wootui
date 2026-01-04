@@ -1,98 +1,98 @@
 name: Build and Release
 
 on:
-    push:
-        tags:
-            - "v*"
+  push:
+    tags:
+      - "v*"
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    build-and-release:
-        name: Build and Release
-        runs-on: ubuntu-latest
+  build-and-release:
+    name: Build and Release
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                target:
-                    - name: wootui-darwin-x64
-                      bun_target: bun-darwin-x64
-                      bun_os: darwin
-                      bun_cpu: x64
-                      archive_ext: .zip
-                    - name: wootui-darwin-arm64
-                      bun_target: bun-darwin-aarch64
-                      bun_os: darwin
-                      bun_cpu: arm64
-                      archive_ext: .zip
-                    - name: wootui-linux-x64
-                      bun_target: bun-linux-x64
-                      bun_os: linux
-                      bun_cpu: x64
-                      archive_ext: .tar.gz
-                    - name: wootui-linux-arm64
-                      bun_target: bun-linux-aarch64
-                      bun_os: linux
-                      bun_cpu: arm64
-                      archive_ext: .tar.gz
-                    - name: wootui-windows-x64
-                      bun_target: bun-windows-x64
-                      bun_os: win32
-                      bun_cpu: x64
-                      archive_ext: .zip
+    strategy:
+      matrix:
+        target:
+          - name: wootui-darwin-x64
+            bun_target: bun-darwin-x64
+            bun_os: darwin
+            bun_cpu: x64
+            archive_ext: .zip
+          - name: wootui-darwin-arm64
+            bun_target: bun-darwin-aarch64
+            bun_os: darwin
+            bun_cpu: arm64
+            archive_ext: .zip
+          - name: wootui-linux-x64
+            bun_target: bun-linux-x64
+            bun_os: linux
+            bun_cpu: x64
+            archive_ext: .tar.gz
+          - name: wootui-linux-arm64
+            bun_target: bun-linux-aarch64
+            bun_os: linux
+            bun_cpu: arm64
+            archive_ext: .tar.gz
+          - name: wootui-windows-x64
+            bun_target: bun-windows-x64
+            bun_os: win32
+            bun_cpu: x64
+            archive_ext: .zip
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Setup Bun
-              uses: oven-sh/setup-bun@v1
-              with:
-                  bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-            - name: Install dependencies
-              run: bun install --frozen-lockfile
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
-            - name: Install target platform package
-              run: bun install --os ${{ matrix.target.bun_os }} --cpu ${{ matrix.target.bun_cpu }}
+      - name: Install target platform package
+        run: bun install --os ${{ matrix.target.bun_os }} --cpu ${{ matrix.target.bun_cpu }}
 
-            - name: Build executable
-              run: bun build ./src/index.tsx --compile --target ${{ matrix.target.bun_target }} --outfile ${{ matrix.target.name }}
+      - name: Build executable
+        run: bun run src/utils/generate-version.ts && bun build ./src/index.tsx --compile --target ${{ matrix.target.bun_target }} --outfile ${{ matrix.target.name }}
 
-            - name: Prepare artifact for Windows
-              if: matrix.target.bun_os == 'win32'
-              run: zip ${{ matrix.target.name }}.zip ${{ matrix.target.name }}.exe
+      - name: Prepare artifact for Windows
+        if: matrix.target.bun_os == 'win32'
+        run: zip ${{ matrix.target.name }}.zip ${{ matrix.target.name }}.exe
 
-            - name: Prepare artifact for macOS
-              if: matrix.target.bun_os == 'darwin'
-              run: zip ${{ matrix.target.name }}.zip ${{ matrix.target.name }}
+      - name: Prepare artifact for macOS
+        if: matrix.target.bun_os == 'darwin'
+        run: zip ${{ matrix.target.name }}.zip ${{ matrix.target.name }}
 
-            - name: Prepare artifact for Linux
-              if: matrix.target.bun_os == 'linux'
-              run: tar -czf ${{ matrix.target.name }}.tar.gz ${{ matrix.target.name }}
+      - name: Prepare artifact for Linux
+        if: matrix.target.bun_os == 'linux'
+        run: tar -czf ${{ matrix.target.name }}.tar.gz ${{ matrix.target.name }}
 
-            - name: Upload artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: ${{ matrix.target.name }}${{ matrix.target.archive_ext }}
-                  path: ${{ matrix.target.name }}${{ matrix.target.archive_ext }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target.name }}${{ matrix.target.archive_ext }}
+          path: ${{ matrix.target.name }}${{ matrix.target.archive_ext }}
 
-    release:
-        name: Create GitHub Release
-        needs: build-and-release
-        runs-on: ubuntu-latest
+  release:
+    name: Create GitHub Release
+    needs: build-and-release
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Download all artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  path: artifacts
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
 
-            - name: Create Release and Upload Assets
-              uses: softprops/action-gh-release@v1
-              with:
-                  tag_name: ${{ github.ref_name }}
-                  body: ${{ github.event.head_commit.message }}
-                  files: |
-                      artifacts/*/*
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          body: ${{ github.event.head_commit.message }}
+          files: |
+            artifacts/*/*
