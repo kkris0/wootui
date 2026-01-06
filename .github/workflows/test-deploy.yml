@@ -1,0 +1,31 @@
+name: Test deployment
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - docs/**
+
+jobs:
+  test-deploy:
+    name: Test deployment
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: docs
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+      - name: Test build website
+        run: bun run build
