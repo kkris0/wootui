@@ -7,8 +7,6 @@
     <br/>
 </div>
 
-
-
 ![Demo](wootui-demo.png)
 
 ## Installation

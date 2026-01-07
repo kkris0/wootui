@@ -1,0 +1,19 @@
+name: Markdown
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  prettier-check:
+    runs-on: ubuntu-latest
+    outputs:
+      pr_labels: ${{ steps.get_labels.outputs.labels }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+      - name: Install Prettier
+        run: npm install prettier
+      - name: Run Prettier check (fail if not formatted)
+        run: npx prettier --check "**/*.md" "!CHANGELOG.md"
