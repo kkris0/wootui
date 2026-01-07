@@ -11,6 +11,7 @@ Handle Google Gemini API rate limits when translating large catalogs.
 **Free tier**: 15 requests per minute
 
 **Symptoms**:
+
 - "Too Many Requests" error during translation
 - Translation stops mid-batch
 - 429 error code
@@ -20,15 +21,19 @@ Handle Google Gemini API rate limits when translating large catalogs.
 ## Current Solutions
 
 ### 1. Wait and Retry
+
 Wait 1 minute, then restart translation. WooTUI will continue from where it left off.
 
 ### 2. Reduce Batch Size
+
 Lower batch size to 3-5 products:
+
 1. Press `s` to open Settings
 2. Change Batch Size to 3
 3. Retry translation
 
 ### 3. Upgrade API Tier
+
 Upgrade to paid tier in Google Cloud Console for higher rate limits.
 
 ---
@@ -39,6 +44,7 @@ Upgrade to paid tier in Google Cloud Console for higher rate limits.
 WooTUI will soon include a **timeout configuration** that automatically delays API requests to stay within rate limits. This will eliminate manual waiting and batch size adjustments.
 
 **How it will work**:
+
 - Configure delay between requests in Settings
 - WooTUI spreads requests automatically
 - No more rate limit errors on free tier

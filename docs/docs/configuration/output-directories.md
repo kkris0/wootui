@@ -11,11 +11,13 @@ Configure where WooTUI saves translated CSV files.
 **Default**: `~/Downloads` (or `C:\Users\YourName\Downloads` on Windows)
 
 All translated files are saved with format:
+
 ```
 [original-filename]_translated_[language].csv
 ```
 
 **Example**:
+
 - Input: `products.csv`
 - Output: `products_translated_es.csv` (Spanish)
 
@@ -29,6 +31,7 @@ All translated files are saved with format:
 4. Press `Enter` to save
 
 **Path format**:
+
 - macOS/Linux: `/Users/yourname/Documents/WooTUI`
 - Windows: `C:\Users\YourName\Documents\WooTUI`
 
@@ -37,6 +40,7 @@ All translated files are saved with format:
 ## Organization Tips
 
 ### Create Dedicated Folder
+
 ```
 ~/Documents/WooTUI-Translations/
   ├── 2025-01-15-spanish/
@@ -45,11 +49,14 @@ All translated files are saved with format:
 ```
 
 ### Date-based Naming
+
 Manually rename outputs with dates:
+
 - `products_es_2025-01-15.csv`
 - `products_fr_2025-01-20.csv`
 
 ### Cloud Sync
+
 Point output directory to Dropbox/iCloud folder for automatic backup.
 
 ---
@@ -63,6 +70,7 @@ Point output directory to Dropbox/iCloud folder for automatic backup.
 ### File Not Found After Translation
 
 **Solution**:
+
 1. Check Settings → Output Directory for current location
 2. Press `o` in Results screen to open folder
 3. Search your system for `*_translated_*.csv` files

@@ -33,12 +33,14 @@ npm version 1.2.3   # Set specific version
 ```
 
 **Release Process:**
+
 1. Make code changes and commit: `git add . && git commit -m "feat: new feature"`
 2. Update version and create tag: `npm version patch/minor/major`
 3. Push commits and tags: `git push && git push --tags`
 4. GitHub Actions automatically builds release on tag push (triggers on `v*` tags)
 
 **Notes:**
+
 - `npm version` updates `package.json` version, creates a commit, and creates a git tag with `v` prefix
 - Version is displayed in bottom-right corner of both MainScreen and SettingsScreen
 - Release tags use `v` prefix automatically (e.g., `v1.0.0`) - created by `npm version`
@@ -47,13 +49,16 @@ npm version 1.2.3   # Set specific version
 ## Architecture
 
 ### Entry Point & Application Flow
+
 - `src/index.tsx` - App entry point with screen navigation (Main/Settings) and Toaster setup
 - Uses `@opentui/core` renderer and `@opentui/react` for terminal rendering
 - Configuration managed via `conf` package as module-level singleton in `src/utils/config.ts`
 - **Global config access**: Any file (component, hook, utility function) can import and read `appConfig` directly - no need to pass config as props or parameters
 
 ### Path Aliases
+
 TypeScript path aliases are configured in `tsconfig.json` for cleaner imports:
+
 - `@/*` - Maps to `src/*` (e.g., `@/types/config`, `@/utils/woo-csv`)
 - `@/utils/*` - Maps to `src/utils/*`
 - `@/hooks/*` - Maps to `src/hooks/*`
@@ -62,20 +67,23 @@ TypeScript path aliases are configured in `tsconfig.json` for cleaner imports:
 - `@/types/*` - Maps to `src/types/*`
 
 **Example:**
+
 ```typescript
 // Good: Using path alias
-import { appConfig } from '@/utils/config';
-import type { LanguageCode } from '@/types/language-code';
+import { appConfig } from "@/utils/config";
+import type { LanguageCode } from "@/types/language-code";
 
 // Also acceptable: Relative import
-import { appConfig } from '../utils/config';
+import { appConfig } from "../utils/config";
 ```
 
 ### Core Screens
+
 - **MainScreen** (`src/screens/main-screen.tsx`) - Multi-step wizard for translation workflow
 - **SettingsScreen** (`src/screens/settings-screen.tsx`) - Configure API key, model ID, batch size, output directory
 
 ### Wizard System
+
 The application uses a custom step-based wizard component (`src/components/wizard/`) for the main translation flow:
 
 1. **CSV Path** - User provides path to WooCommerce export CSV
@@ -86,6 +94,7 @@ The application uses a custom step-based wizard component (`src/components/wizar
 6. **Results** - Display translation results with costs and output paths
 
 **Wizard Architecture:**
+
 - `wizard.tsx` - Main wizard component with keyboard navigation (Tab/Shift+Tab between steps, Ctrl+Return to submit)
 - `wizard-context.tsx` - Context provider for wizard state management
 - `wizard-step.tsx` - Individual step wrapper with status indicators
@@ -95,6 +104,7 @@ The application uses a custom step-based wizard component (`src/components/wizar
 
 **Main Screen Steps:**
 Each wizard step is defined in `src/components/main-screen-steps/` as a separate module:
+
 - `csv-path-step.tsx` - Creates CSV path input step using `createCsvPathStep()`
 - `columns-selection-step.tsx` - Creates column selection step using `createColumnsSelectionStep()`
 - `target-languages-step.tsx` - Creates language selection step using `createTargetLanguagesStep()`
@@ -105,6 +115,7 @@ Each wizard step is defined in `src/components/main-screen-steps/` as a separate
 - `index.ts` - Barrel export for all step creators and types
 
 **Step Pattern:**
+
 ```typescript
 export function createXxxStep(): WizardStepDefinition<TranslateWizardValues> {
     return {
@@ -113,7 +124,7 @@ export function createXxxStep(): WizardStepDefinition<TranslateWizardValues> {
         render: (ctx) => {
             // Can read config directly inside render if needed
             const outputDir = appConfig.get('outputDir');
-            
+
             // Render step UI based on ctx.values, ctx.isFocused, ctx.previousStepState
             return <YourComponent />;
         },
@@ -121,7 +132,7 @@ export function createXxxStep(): WizardStepDefinition<TranslateWizardValues> {
             // Read config directly inside onSubmit - no need to pass as parameters
             const apiKey = appConfig.get('apiKey');
             const modelId = appConfig.get('modelId');
-            
+
             // Receives values from the previous step and the context of the wizard
             // Validates, processes, and returns data for the next step
             return resultData;
@@ -131,6 +142,7 @@ export function createXxxStep(): WizardStepDefinition<TranslateWizardValues> {
 ```
 
 **Wizard Centered Scrolling:**
+
 - The active/focused step is always centered vertically in the viewport
 - Uses a scrollbox with `focused={false}` to disable mouse scrolling (keyboard-only navigation)
 - Scrollbar is hidden via `verticalScrollbarOptions={{ visible: false }}`
@@ -141,6 +153,7 @@ export function createXxxStep(): WizardStepDefinition<TranslateWizardValues> {
 - Scrollbox ref (`ScrollBoxRenderable`) provides access to `scrollTo()`, `viewport.height`, and `content` for programmatic control
 
 ### Translation Pipeline
+
 Located in `src/utils/`:
 
 1. **CSV Parsing** (`woo-csv.ts`)
@@ -175,6 +188,7 @@ Located in `src/utils/`:
 ### Components
 
 **Reusable UI Components:**
+
 - `Form` (`src/components/form/`) - Form system with TextField, Dropdown, Description components
 - `ActionPanel` (`src/components/action-panel/`) - Command palette with keyboard shortcuts
 - `Toggle` (`src/components/toggle/`) - Toggle switch for boolean settings
@@ -185,6 +199,7 @@ Located in `src/utils/`:
 ### Hooks
 
 **Custom Hooks Pattern:**
+
 - All custom hooks live in `src/hooks/` directory
 - Each hook is in its own file (e.g., `use-output-dir.ts`, `use-open-output-folder.ts`)
 - **DO NOT** use barrel exports (index.ts) for hooks - import directly from hook files
@@ -193,25 +208,27 @@ Located in `src/utils/`:
 - Hooks that need config access import `appConfig` directly from `@/utils/config` and read values internally
 
 **Example:**
+
 ```typescript
 // Good: Direct import
-import { useOutputDir } from '../hooks/use-output-dir';
+import { useOutputDir } from "../hooks/use-output-dir";
 
 // Bad: Barrel export
-import { useOutputDir } from '../hooks';
+import { useOutputDir } from "../hooks";
 
 // Inside the hook implementation:
 export function useOutputDir(): string {
-    // Read config directly inside the hook - no need to pass as parameter
-    const configuredDir = appConfig.get('outputDir');
-    if (configuredDir && configuredDir.trim() !== '') {
-        return configuredDir;
-    }
-    return path.join(os.homedir(), 'Downloads');
+  // Read config directly inside the hook - no need to pass as parameter
+  const configuredDir = appConfig.get("outputDir");
+  if (configuredDir && configuredDir.trim() !== "") {
+    return configuredDir;
+  }
+  return path.join(os.homedir(), "Downloads");
 }
 ```
 
 **Available Hooks:**
+
 - `useOutputDir()` - Returns output directory with consistent default (~/Downloads), reads from `appConfig` internally
 - `useOpenOutputFolder()` - Returns function to open output folder in system file explorer, reads from `appConfig` internally
 - `useInputHandler` - Keyboard input handling with callbacks
@@ -223,6 +240,7 @@ export function useOutputDir(): string {
 ### OpenTUI-Specific Patterns
 
 **Critical Rules:**
+
 - Use `<box>` for ALL layout (Flexbox-based)
 - Use `<text>` ONLY for text rendering - never nest `<box>` inside `<text>`
 - Interactive elements require `focused={true}` prop when active
@@ -231,12 +249,14 @@ export function useOutputDir(): string {
 - Text styling via `TextAttributes` enum (BOLD, DIM, etc.)
 
 **Custom JSX Pragma:**
+
 - `jsxImportSource: "@opentui/react"` in tsconfig.json
 - Lowercase native elements: `<box>`, `<text>`, `<input>`, `<scrollbox>`
 
 ## Code Style (from `.cursor/rules/code_practices.md`)
 
 **Critical Style Rules:**
+
 - Use **tabs** for indentation (conflicts with biome.json which uses 4 spaces - biome.json takes precedence)
 - Single quotes for strings
 - **Semicolons required** (per biome.json)
@@ -246,6 +266,7 @@ export function useOutputDir(): string {
 - Event handlers prefixed with `handle`
 
 **TypeScript:**
+
 - Prefer `interface` over `type` for objects
 - Strict mode enabled
 - JSDoc for public functions
@@ -265,16 +286,19 @@ export function useOutputDir(): string {
 ## Important Context
 
 **WPML Integration:**
+
 - The app expects CSVs exported from WooCommerce with WPML plugin
 - Key WPML columns: `Meta: _wpml_import_source_language_code`, `Meta: _wpml_import_language_code`, `Meta: _wpml_import_translation_group`
 - Translation group links source products to their translations
 
 **Gemini API:**
+
 - Uses `gemini-2.5-pro` by default
 - Pricing calculated per 1M tokens (configurable in `src/utils/gemini-pricing.ts`)
 - TOON format is critical for preserving CSV structure through AI translation
 
 **Configuration:**
+
 - **Module-level singleton pattern**: Configuration is created once in `src/utils/config.ts` and exported as `appConfig`
 - Stored via `conf` package in user's home directory (`~/.config/wootui/config.json`)
 - Settings with defaults:
@@ -293,34 +317,38 @@ export function useOutputDir(): string {
 - Output directory defaults work seamlessly on macOS (`~/Downloads`), Linux (`~/Downloads`), and Windows (`C:\Users\username\Downloads`)
 
 **Config Pattern:**
+
 ```typescript
 // In any component, hook, or utility function:
-import { appConfig } from '@/utils/config';
+import { appConfig } from "@/utils/config";
 
 // Read config directly in functions - no need to pass as parameters
 function translateProducts() {
-    const apiKey = appConfig.get('apiKey');
-    const modelId = appConfig.get('modelId');
-    const batchSize = appConfig.get('batchSize');
-    // Use values directly...
+  const apiKey = appConfig.get("apiKey");
+  const modelId = appConfig.get("modelId");
+  const batchSize = appConfig.get("batchSize");
+  // Use values directly...
 }
 
 // Write config
-appConfig.set('modelId', 'gemini-2.5-pro');
-appConfig.set('outputDir', '/custom/path');
+appConfig.set("modelId", "gemini-2.5-pro");
+appConfig.set("outputDir", "/custom/path");
 
 // Bad: Don't pass config values as parameters
-function translateProducts(apiKey: string, modelId: string) { /* ... */ }
+function translateProducts(apiKey: string, modelId: string) {
+  /* ... */
+}
 
 // Good: Read directly from appConfig inside the function
 function translateProducts() {
-    const apiKey = appConfig.get('apiKey');
-    const modelId = appConfig.get('modelId');
-    // ...
+  const apiKey = appConfig.get("apiKey");
+  const modelId = appConfig.get("modelId");
+  // ...
 }
 ```
 
 **Windows Terminal Keyboard Behavior:**
+
 - Windows Terminal has a known issue where `Ctrl+Return` is not properly sent to applications
 - The code checks for both `key.name === 'return'` and `key.name === 'j'` when `ctrl` is pressed
 - This allows Windows users to use either `Ctrl+Enter` or `Ctrl+J` to submit wizard steps

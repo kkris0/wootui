@@ -13,21 +13,25 @@ WooTUI is a command-line application that automates the translation of WooCommer
 ### Why WooTUI?
 
 **Speed & Efficiency**
+
 - Translate entire product catalogs in minutes, not hours
 - Batch processing for handling large inventories
 - Cost-effective AI translations with transparent pricing
 
 **Accuracy & Quality**
+
 - Context-aware translations using Google Gemini
 - Preserves HTML formatting and special characters
 - Maintains brand consistency across languages
 
 **Control & Flexibility**
+
 - Choose which columns to translate (descriptions, attributes, SEO meta)
 - Override or skip existing translations
 - Preview costs before executing translations
 
 **Terminal-First Design**
+
 - Fast, keyboard-driven interface
 - Works on macOS, Windows, and Linux
 - No browser required—runs entirely in your terminal
@@ -62,16 +66,19 @@ The translated CSV file is ready to import back into WooCommerce with WPML, pres
 ## Use Cases
 
 **E-commerce Store Owners**
+
 - Expand to international markets quickly
 - Maintain consistent product information across languages
 - Update translated catalogs when products change
 
 **Agencies & Developers**
+
 - Batch translate multiple client stores
 - Optimize translation costs with selective column translation
 - Integrate into automated deployment workflows
 
 **Multilingual Marketplaces**
+
 - Scale product listings to multiple regions
 - Ensure SEO optimization in every language
 - Maintain translation quality without manual work

@@ -9,6 +9,7 @@ Fix CSV encoding, formatting, and column issues for successful translation.
 ## CSV Requirements
 
 WooTUI expects:
+
 - **Encoding**: UTF-8 (not ANSI, ISO-8859-1, or Windows-1252)
 - **Delimiter**: Comma `,` (not semicolon `;`)
 - **Line breaks**: LF or CRLF (not CR only)
@@ -27,11 +28,13 @@ WooTUI expects:
 **Solution**:
 
 **Google Sheets (Recommended)**:
+
 1. Upload CSV to Google Sheets
 2. File → Download → Comma-separated values (.csv)
 3. Google Sheets always exports UTF-8
 
 **LibreOffice Calc**:
+
 1. Open CSV in LibreOffice Calc
 2. File → Save As
 3. File type: "Text CSV (.csv)"
@@ -40,6 +43,7 @@ WooTUI expects:
 6. Save
 
 **Windows Notepad**:
+
 1. Open CSV in Notepad
 2. File → Save As
 3. Encoding: **UTF-8**
@@ -84,6 +88,7 @@ Microsoft Excel often breaks UTF-8 encoding. Use Google Sheets or LibreOffice in
 **Causes & Solutions**:
 
 **Inconsistent Formatting**:
+
 ```csv
 # Bad - mixed delimiters
 Attribute 1 Value(s)
@@ -95,6 +100,7 @@ Attribute 1 Value(s)
 ```
 
 **Extra Spaces**:
+
 ```csv
 # Bad
 "Red , Blue , Green"
@@ -104,6 +110,7 @@ Attribute 1 Value(s)
 ```
 
 **Wrong Column Count**:
+
 - Each attribute needs 4 columns: Name, Value(s), Visible, Default
 - Missing columns will cause errors
 
@@ -114,10 +121,12 @@ Attribute 1 Value(s)
 ### How WooTUI Handles Empty Fields
 
 **Empty string** (`""`):
+
 - Column exists but has no value
 - WooTUI preserves as empty in translation
 
 **NULL placeholder** (`NULL_columnName`):
+
 - WooTUI uses this internally to maintain CSV structure
 - You shouldn't see these in output (if you do, it's a bug)
 
@@ -134,6 +143,7 @@ Empty fields in source CSV will remain empty in translated CSV. This is intentio
 **Problem**: CSV uses `;` instead of `,`
 
 **Solution**:
+
 1. Open CSV in Google Sheets or LibreOffice
 2. Import with semicolon delimiter
 3. Export as CSV with comma delimiter
@@ -149,6 +159,7 @@ Empty fields in source CSV will remain empty in translated CSV. This is intentio
 **CSV Standard**: Quotes inside quoted fields must be doubled
 
 **Example**:
+
 ```csv
 # Bad
 Description
@@ -160,6 +171,7 @@ Description
 ```
 
 **Solution**:
+
 - Don't manually edit CSVs with complex quotes
 - Let Google Sheets or LibreOffice handle escaping
 - Or use a CSV validator tool
@@ -169,11 +181,14 @@ Description
 ## Validating Your CSV
 
 ### Online Validators
+
 - [CSVLint](https://csvlint.io/) - Check for formatting errors
 - [CSV Validator](https://www.convertcsv.com/csv-validator-online.htm) - Detailed validation
 
 ### Manual Check
+
 Open CSV in text editor (not Excel) and verify:
+
 1. First line has column headers
 2. Each row has same number of columns
 3. Special characters display correctly
@@ -184,13 +199,17 @@ Open CSV in text editor (not Excel) and verify:
 ## Best Practices
 
 ### 1. Always Use UTF-8
+
 Before translating:
+
 - Export from WooCommerce
 - Open in Google Sheets
 - Re-export as CSV (ensures UTF-8)
 
 ### 2. Don't Edit in Excel
+
 Excel breaks:
+
 - UTF-8 encoding
 - Leading zeros in SKUs
 - Date formats
@@ -198,14 +217,18 @@ Excel breaks:
 Use Google Sheets or LibreOffice Calc instead.
 
 ### 3. Keep Backups
+
 Before any CSV editing:
+
 ```
 products_original_2025-01-20.csv
 products_edited_2025-01-20.csv
 ```
 
 ### 4. Test with Small Sample
+
 Before translating 1000 products:
+
 - Extract 5 rows to test CSV
 - Translate test CSV
 - Verify format is correct

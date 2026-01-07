@@ -12,6 +12,7 @@
             "**/*.tsx",
             "**/*.js",
             "**/*.jsx",
+            "**/*.md",
             "!migrations",
             "!dist",
             "!.next",

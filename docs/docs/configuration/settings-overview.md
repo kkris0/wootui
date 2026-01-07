@@ -9,6 +9,7 @@ Configure WooTUI settings for your workflow. Press `s` from the Main Screen to o
 ## Available Settings
 
 ### API Key (Required)
+
 Your Google Gemini API key. Get one at [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key).
 
 **Format**: Starts with `AIza...`
@@ -18,15 +19,18 @@ Your API key is stored in plain text at `~/.config/wootui/config.json` (macOS/Li
 :::
 
 ### Model ID
+
 Which Gemini model to use for translations.
 
 **Options**:
+
 - `gemini-2.5-pro` (default) - Best quality, slower, ~$1/1M tokens
 - `gemini-2.5-flash` - Faster, cheaper (~$0.20/1M tokens), slightly lower quality
 
 **When to change**: Use flash for simple products or large catalogs where cost matters more than perfect quality.
 
 ### Batch Size
+
 Number of products processed together in each batch.
 
 **Default**: 5 products
@@ -34,6 +38,7 @@ Number of products processed together in each batch.
 **Range**: 3-20
 
 **Recommendations**:
+
 - Simple products: 10-15
 - Complex products: 5-8
 - Free API tier: 3-5 (avoid rate limits)
@@ -41,6 +46,7 @@ Number of products processed together in each batch.
 See [Batch Processing](../workflows/batch-processing.md) for details.
 
 ### Output Directory
+
 Where translated CSV files are saved.
 
 **Default**: `~/Downloads` (macOS/Linux) or `C:\Users\YourName\Downloads` (Windows)
@@ -64,6 +70,7 @@ Where translated CSV files are saved.
 ## Configuration File Location
 
 Settings are saved automatically to:
+
 - **macOS/Linux**: `~/.config/wootui/config.json`
 - **Windows**: `%APPDATA%\wootui\config.json`
 

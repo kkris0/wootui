@@ -21,6 +21,7 @@ Export your WooCommerce products with WPML columns ready for WooTUI translation.
 Ensure your export includes:
 
 ### Core Product Columns
+
 - ID
 - SKU
 - Name
@@ -28,6 +29,7 @@ Ensure your export includes:
 - Short Description
 
 ### WPML Columns (Critical!)
+
 - `Meta: _wpml_import_source_language_code`
 - `Meta: _wpml_import_language_code`
 - `Meta: _wpml_import_translation_group`
@@ -37,6 +39,7 @@ If these columns don't appear in your export, WPML might not be active or config
 :::
 
 ### Optional (But Recommended)
+
 - All `Attribute X Name/Value` columns (for variable products)
 - SEO meta columns (`Meta: rank_math_*` or `Meta: _yoast_wpseo_*`)
 - Custom metadata you want to translate
@@ -46,12 +49,15 @@ If these columns don't appear in your export, WPML might not be active or config
 ## Export Options
 
 ### Export All Products
+
 - ✅ Best for first translation
 - ✅ Includes all existing translations
 - ❌ Large file for big catalogs
 
 ### Export by Category/Tag
+
 Use WooCommerce export filters to limit export:
+
 - **Category**: "T-Shirts", "Accessories", etc.
 - **Tags**: "New Arrivals", "Sale Items"
 - **Date range**: Products created after X date
@@ -59,7 +65,9 @@ Use WooCommerce export filters to limit export:
 **Use when**: You only need to translate specific products.
 
 ### Export Untranslated Products Only
+
 WooCommerce doesn't have a built-in filter for this. Workaround:
+
 1. Export all products
 2. Open CSV in Google Sheets
 3. Filter where `Meta: _wpml_import_language_code` is empty
@@ -72,6 +80,7 @@ WooCommerce doesn't have a built-in filter for this. Workaround:
 ### "Download CSV" Button Doesn't Work
 
 **Solution**:
+
 - Try a different browser
 - Disable browser extensions (ad blockers)
 - Check PHP memory limit on server (increase to 256M+)
@@ -81,6 +90,7 @@ WooCommerce doesn't have a built-in filter for this. Workaround:
 **Cause**: WooCommerce export has a limit (~1000 products depending on server)
 
 **Solution**:
+
 1. Export in batches using date filters
 2. Or export by category/tag
 3. Translate each batch separately
@@ -92,6 +102,7 @@ WooCommerce doesn't have a built-in filter for this. Workaround:
 **Cause**: You exported translated products, not source products
 
 **Solution**:
+
 1. Go to WPML → WooCommerce Multilingual
 2. Switch to source language view (e.g., English)
 3. Export products again
@@ -102,10 +113,13 @@ WooCommerce doesn't have a built-in filter for this. Workaround:
 ## Best Practices
 
 ### 1. Export All Columns First Time
+
 Even if you don't need attributes or SEO fields now, include them. You might want to translate them later, and having the columns makes it easier.
 
 ### 2. Save Export Settings
+
 Create a "Translation Export" preset:
+
 - All columns
 - No filters
 - Save as template
@@ -113,7 +127,9 @@ Create a "Translation Export" preset:
 Reuse for future exports.
 
 ### 3. Backup Exported CSV
+
 Before translating, save a copy:
+
 ```
 products_backup_2025-01-20.csv
 ```
@@ -121,7 +137,9 @@ products_backup_2025-01-20.csv
 If something goes wrong, you can start over.
 
 ### 4. Check File Encoding
+
 Open CSV in a text editor and verify:
+
 - Encoding: UTF-8 (not ANSI or ISO-8859-1)
 - Delimiter: Comma `,` (not semicolon `;`)
 

@@ -9,6 +9,7 @@ Understand how WooTUI integrates with WordPress Multilingual Plugin (WPML) for W
 ## What is WPML?
 
 WPML is a WordPress plugin that manages multilingual content, including WooCommerce products. It:
+
 - Links translated products together (translation groups)
 - Manages language switchers on your site
 - Handles URLs for each language (/es/product-name)
@@ -21,11 +22,13 @@ WPML is a WordPress plugin that manages multilingual content, including WooComme
 ## How WooTUI Fits In
 
 **Traditional WPML workflow** (slow):
+
 1. Manually translate each product in WordPress admin
 2. Or hire translators
 3. Or use WPML's built-in translation service ($$$)
 
 **WooTUI workflow** (fast):
+
 1. Export products from WooCommerce
 2. Translate with WooTUI (AI, minutes, cheap)
 3. Import back to WooCommerce
@@ -36,9 +39,11 @@ WPML is a WordPress plugin that manages multilingual content, including WooComme
 ## Key WPML Concepts
 
 ### Translation Groups
+
 Products in different languages are linked by a **translation group ID**.
 
 **Example**:
+
 ```
 Product A (English) - Group: woocommerce_product_123
 Product A (Spanish) - Group: woocommerce_product_123
@@ -50,7 +55,9 @@ All three products share the same group, so WPML knows they're translations of e
 **WooTUI preserves these groups automatically.**
 
 ### Language Codes
+
 ISO 639-1 language codes identify each language:
+
 - `en` - English
 - `es` - Spanish
 - `fr` - French
@@ -59,6 +66,7 @@ ISO 639-1 language codes identify each language:
 These codes appear in CSV columns and URLs.
 
 ### Source Language
+
 The original language your products are written in (usually English).
 
 **In CSV**: Products with empty `Meta: _wpml_import_language_code` are source products.
@@ -70,19 +78,23 @@ The original language your products are written in (usually English).
 WooTUI requires these columns in your CSV:
 
 ### `Meta: _wpml_import_source_language_code`
+
 The language code of the original product.
 
 **Example**: `en` (English)
 
 ### `Meta: _wpml_import_language_code`
+
 The language code of the translated product.
 
 **Values**:
+
 - Empty = source product
 - `es` = Spanish translation
 - `fr` = French translation
 
 ### `Meta: _wpml_import_translation_group`
+
 Unique ID linking source and translations together.
 
 **Format**: `woocommerce_product_[ID]`

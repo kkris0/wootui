@@ -11,11 +11,13 @@ Choose whether to skip or override existing translations when products already h
 In Step 3 (Target Languages), you'll see: **"Override existing translations"** checkbox
 
 ### Skip (Default - Unchecked)
+
 - Only translates products that **don't** have translations yet
 - Preserves existing manual translations
 - Safer for incremental updates
 
 ### Override (Checked)
+
 - **Replaces all** existing translations for selected products
 - Use when updating outdated translations
 - Use when fixing translation errors
@@ -25,6 +27,7 @@ In Step 3 (Target Languages), you'll see: **"Override existing translations"** c
 ## When to Skip (Default)
 
 Use skip when:
+
 - ✅ Adding new products to catalog
 - ✅ First translation of new languages
 - ✅ You have manual translations you want to keep
@@ -37,6 +40,7 @@ Use skip when:
 ## When to Override
 
 Use override when:
+
 - ✅ Updating old AI translations with better quality
 - ✅ Fixing translation errors across all products
 - ✅ Product descriptions changed and translations are outdated
@@ -51,10 +55,12 @@ Override replaces ALL translations. Export your current translations as backup b
 ## How WooTUI Detects Existing Translations
 
 WooTUI checks WPML columns in your CSV:
+
 - `Meta: _wpml_import_language_code` - If this has a value (e.g., "es"), product has a translation
 - `Meta: _wpml_import_translation_group` - Links source product to translations
 
 **Example CSV**:
+
 ```
 ID,Name,Meta: _wpml_import_language_code
 123,T-Shirt,       (empty = source product)
@@ -68,6 +74,7 @@ If `es` translation exists and skip is enabled, WooTUI won't re-translate produc
 ## Common Scenarios
 
 ### Scenario 1: Adding New Products
+
 **Situation**: You added 20 new products, already have 100 translated
 
 **Setting**: Skip (default)
@@ -77,6 +84,7 @@ If `es` translation exists and skip is enabled, WooTUI won't re-translate produc
 ---
 
 ### Scenario 2: Updating Descriptions
+
 **Situation**: You improved English descriptions, need to update translations
 
 **Setting**: Override enabled
@@ -86,6 +94,7 @@ If `es` translation exists and skip is enabled, WooTUI won't re-translate produc
 ---
 
 ### Scenario 3: Mixing Manual + AI Translations
+
 **Situation**: 10 products manually translated (high quality), 90 need AI
 
 **Setting**: Skip (default)
@@ -95,6 +104,7 @@ If `es` translation exists and skip is enabled, WooTUI won't re-translate produc
 ---
 
 ### Scenario 4: Fixing Bad Translations
+
 **Situation**: Previous AI run had poor quality, need to re-translate
 
 **Setting**: Override enabled
@@ -106,7 +116,9 @@ If `es` translation exists and skip is enabled, WooTUI won't re-translate produc
 ## Best Practices
 
 ### 1. Always Test with Override Disabled First
+
 Run a small test (5-10 products) with skip enabled to:
+
 - Verify translation quality
 - Check what products get translated
 - Confirm cost estimates
@@ -114,13 +126,17 @@ Run a small test (5-10 products) with skip enabled to:
 Then decide whether to use override for full catalog.
 
 ### 2. Backup Before Override
+
 Before enabling override:
+
 1. Export current products with translations
 2. Save CSV as backup: `products_backup_YYYYMMDD.csv`
 3. If something goes wrong, you can re-import the backup
 
 ### 3. Use Override Selectively
+
 Don't need to override everything? Filter your CSV:
+
 1. Open in Google Sheets
 2. Filter to products that need updating
 3. Export filtered rows
@@ -137,6 +153,7 @@ Only those products get replaced.
 **Problem**: Enabled override but old translations still appear
 
 **Solution**:
+
 1. Verify translated CSV has language code column populated
 2. Re-import with "Update existing products" enabled
 3. Clear WooCommerce and WPML cache
@@ -149,6 +166,7 @@ Only those products get replaced.
 **Cause**: Products have existing translations you didn't know about
 
 **Solution**:
+
 1. Check WPML → Translation Management for hidden translations
 2. Export products and check `_wpml_import_language_code` column
 3. Enable override if you want to replace those translations

@@ -49,6 +49,7 @@ The **Main Screen** is where you perform translations. It features a 6-step wiza
 ```
 
 **Status Indicators:**
+
 - **●** (Filled circle) - Current/active step
 - **○** (Empty circle) - Completed step or not yet accessible
 - **✓** (Checkmark) - Successfully completed step
@@ -88,32 +89,38 @@ The **Settings Screen** is where you configure WooTUI. Access it by pressing **`
 The wizard guides you through the translation workflow step-by-step. Each step must be completed before the next one unlocks.
 
 ### Step 1: CSV Path
+
 - **Purpose**: Select your WooCommerce export CSV
 - **Input**: Text field for file path
 - **Submit**: `Ctrl+Enter` or `Ctrl+J`
 
 ### Step 2: Columns Selection
+
 - **Purpose**: Choose which columns to translate
 - **Input**: Checkboxes for each column
 - **Navigation**: `Tab` to move, `Space` to toggle
 - **Submit**: `Ctrl+Enter` or `Ctrl+J`
 
 ### Step 3: Target Languages
+
 - **Purpose**: Select one or more target languages
 - **Input**: Language checkboxes + override toggle
 - **Submit**: `Ctrl+Enter` or `Ctrl+J`
 
 ### Step 4: Token & Price Estimation
+
 - **Purpose**: Review estimated costs before proceeding
 - **Display**: Token count and price estimate
 - **Action**: Confirm or go back
 
 ### Step 5: Translate
+
 - **Purpose**: Execute the translation
 - **Display**: Progress bar and status updates
 - **Duration**: Varies by catalog size (30s - 5min)
 
 ### Step 6: Results
+
 - **Purpose**: View translation summary and output location
 - **Actions**: Open output folder (`o`) or restart (`Enter`)
 
@@ -129,50 +136,54 @@ WooTUI is designed for keyboard-only navigation. Here are the essential shortcut
 
 ### Global Shortcuts (Work Anywhere)
 
-| Shortcut | Action |
-|----------|--------|
-| `s` | Open Settings screen |
-| `q` | Quit WooTUI |
+| Shortcut | Action                      |
+| -------- | --------------------------- |
+| `s`      | Open Settings screen        |
+| `q`      | Quit WooTUI                 |
 | `Ctrl+C` | Force quit (emergency exit) |
 
 ### Main Screen (Wizard)
 
-| Shortcut | Action |
-|----------|--------|
-| `Tab` | Move to next step/field |
-| `Shift+Tab` | Move to previous step/field |
-| `Enter` | Activate/select focused element |
-| `Ctrl+Enter` | Submit current step |
-| `Ctrl+J` | Submit current step (Windows Terminal workaround) |
-| `Esc` | Cancel or blur current input |
+| Shortcut     | Action                                            |
+| ------------ | ------------------------------------------------- |
+| `Tab`        | Move to next step/field                           |
+| `Shift+Tab`  | Move to previous step/field                       |
+| `Enter`      | Activate/select focused element                   |
+| `Ctrl+Enter` | Submit current step                               |
+| `Ctrl+J`     | Submit current step (Windows Terminal workaround) |
+| `Esc`        | Cancel or blur current input                      |
 
 ### Settings Screen
 
-| Shortcut | Action |
-|----------|--------|
-| `Tab` | Navigate to next field |
-| `Shift+Tab` | Navigate to previous field |
-| `Enter` | Save current field |
-| `Esc` | Return to Main Screen (without saving) |
-| `Ctrl+S` | Save all settings and return to Main Screen |
+| Shortcut    | Action                                      |
+| ----------- | ------------------------------------------- |
+| `Tab`       | Navigate to next field                      |
+| `Shift+Tab` | Navigate to previous field                  |
+| `Enter`     | Save current field                          |
+| `Esc`       | Return to Main Screen (without saving)      |
+| `Ctrl+S`    | Save all settings and return to Main Screen |
 
 ### Form Controls
 
 **Text Fields:**
+
 - Standard text editing (type, backspace, arrow keys)
 - `Enter` saves the field
 - `Esc` cancels editing
 
 **Dropdowns:**
+
 - `Arrow Up/Down` to navigate options
 - `Enter` to select
 - `Esc` to cancel
 
 **Checkboxes:**
+
 - `Space` or `Enter` to toggle on/off
 - Visual indicator shows selected state
 
 **Toggles:**
+
 - `Space` or `Enter` to switch between on/off
 - Shows current state visually
 
@@ -183,11 +194,13 @@ WooTUI is designed for keyboard-only navigation. Here are the essential shortcut
 WooTUI keeps the active step **centered vertically** in your terminal window. As you progress through the wizard, the viewport automatically scrolls to keep the current step in focus.
 
 **Why centered?**
+
 - Easier to see what you're working on
 - Less eye movement required
 - Natural reading position
 
 **Dynamic padding:**
+
 - The first step can center when active
 - The last step can center when you reach it
 - No manual scrolling needed!
@@ -213,26 +226,31 @@ WooTUI provides rich visual feedback to guide you:
 ### Step States
 
 **Idle (Not Started)**
+
 ```
 ○ CSV Path
 ```
 
 **Active (Current Step)**
+
 ```
 ● Columns Selection
 ```
 
 **Running (Processing)**
+
 ```
 ⏳ Translate
 ```
 
 **Success (Completed)**
+
 ```
 ✓ Translate
 ```
 
 **Error (Failed)**
+
 ```
 ✗ Translate
 ```
@@ -240,6 +258,7 @@ WooTUI provides rich visual feedback to guide you:
 ### Progress Indicators
 
 During translation (Step 5), you'll see:
+
 - **Progress bar** showing completion percentage
 - **Current batch** (e.g., "Processing batch 2 of 5")
 - **Estimated time remaining** (approximate)
@@ -252,16 +271,19 @@ During translation (Step 5), you'll see:
 At the bottom of each screen, you'll see a **footer** with context-specific shortcuts:
 
 **Main Screen Footer:**
+
 ```
 Tab/↑↓: Navigate  Enter: Select  Ctrl+Enter: Submit  s: Settings  q: Quit
 ```
 
 **Settings Screen Footer:**
+
 ```
 Tab: Navigate  Enter: Save  Esc: Back  Ctrl+S: Save & Exit
 ```
 
 **Results Screen Footer:**
+
 ```
 o: Open folder  Enter: New translation  q: Quit
 ```
@@ -291,6 +313,7 @@ If you accidentally focus a field or open a dropdown, **`Esc`** quickly cancels 
 ### 5. Memorize 3 Key Shortcuts
 
 Master these three and you'll be productive immediately:
+
 1. **`Tab`** - Move around
 2. **`Ctrl+Enter`** - Submit
 3. **`Esc`** - Cancel/back
@@ -308,6 +331,7 @@ WooTUI uses a **dark terminal theme** inspired by modern code editors. The color
 - **Text**: Light gray (#a9b1ba)
 
 This theme reduces eye strain during extended use and looks great in modern terminal emulators like:
+
 - **macOS**: iTerm2, Terminal.app
 - **Windows**: Windows Terminal, Alacritty
 - **Linux**: GNOME Terminal, Kitty, Alacritty
@@ -327,6 +351,7 @@ If you're using **Windows Terminal**, you may encounter a known issue where `Ctr
 **Workaround**: Use **`Ctrl+J`** instead of `Ctrl+Enter` to submit wizard steps.
 
 **Why both shortcuts?**
+
 - `Ctrl+Enter` works on macOS, Linux, and most Windows terminals
 - `Ctrl+J` is a fallback specifically for Windows Terminal users
 
@@ -337,16 +362,19 @@ If you're using **Windows Terminal**, you may encounter a known issue where `Ctr
 All settings you configure in the Settings Screen are **automatically saved** to disk:
 
 **Config file location:**
+
 - **macOS/Linux**: `~/.config/wootui/config.json`
 - **Windows**: `%APPDATA%\wootui\config.json`
 
 **What's saved:**
+
 - API Key (encrypted? No—keep it safe!)
 - Model ID
 - Batch Size
 - Output Directory
 
 **When changes are saved:**
+
 - Automatically when you edit a field and press `Enter`
 - When you press `Ctrl+S` to save and exit
 - **Not** when you press `Esc` (cancels without saving)
@@ -414,14 +442,17 @@ No, WooTUI is single-threaded and runs one translation workflow at a time. You c
 Now that you understand the interface, you're ready to explore more advanced workflows:
 
 **Improve Your Skills:**
+
 - [Basic Product Translation](../workflows/basic-product-translation.md) - Best practices and tips
 - [Keyboard Shortcuts Reference](../reference/keyboard-shortcuts.md) - Complete shortcut list
 
 **Configure WooTUI:**
+
 - [Settings Overview](../configuration/settings-overview.md) - Customize your setup
 - [Model Selection](../configuration/model-selection.md) - Choose the right Gemini model
 
 **Handle Issues:**
+
 - [Common Errors](../troubleshooting/common-errors.md) - Solutions to frequent problems
 
 ---
@@ -430,18 +461,19 @@ Now that you understand the interface, you're ready to explore more advanced wor
 
 **Print this or keep it handy!**
 
-| Action | Shortcut |
-|--------|----------|
-| Move forward | `Tab` |
-| Move backward | `Shift+Tab` |
-| Select/activate | `Enter` |
-| Submit step | `Ctrl+Enter` or `Ctrl+J` |
-| Cancel/back | `Esc` |
-| Open Settings | `s` |
-| Quit | `q` or `Ctrl+C` |
-| Toggle checkbox | `Space` |
-| Save settings | `Ctrl+S` |
-| Open output folder | `o` (Results screen) |
+| Action             | Shortcut                 |
+| ------------------ | ------------------------ |
+| Move forward       | `Tab`                    |
+| Move backward      | `Shift+Tab`              |
+| Select/activate    | `Enter`                  |
+| Submit step        | `Ctrl+Enter` or `Ctrl+J` |
+| Cancel/back        | `Esc`                    |
+| Open Settings      | `s`                      |
+| Quit               | `q` or `Ctrl+C`          |
+| Toggle checkbox    | `Space`                  |
+| Save settings      | `Ctrl+S`                 |
+| Open output folder | `o` (Results screen)     |
 
 **Step Order:**
+
 1. CSV Path → 2. Columns → 3. Languages → 4. Costs → 5. Translate → 6. Results

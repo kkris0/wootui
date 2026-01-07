@@ -34,11 +34,13 @@ Done! You're ready to translate.
 ## API Key Security
 
 ### Do
+
 - ✅ Keep API key private
 - ✅ Store securely (WooTUI config file is local only)
 - ✅ Regenerate key if compromised
 
 ### Don't
+
 - ❌ Share key publicly
 - ❌ Commit key to GitHub
 - ❌ Use same key across multiple apps (create separate keys)
@@ -48,10 +50,12 @@ Done! You're ready to translate.
 ## Free Tier
 
 Google Gemini offers a **free tier** with generous limits:
+
 - 15 requests per minute
 - Enough for small-medium catalogs
 
 **Typical usage**:
+
 - 100 products ≈ 20 requests (with batch size 5)
 - Translation time ≈ 2-3 minutes
 
@@ -64,6 +68,7 @@ Google Gemini offers a **free tier** with generous limits:
 ### "Invalid API Key" Error
 
 **Solution**:
+
 1. Verify key starts with `AIza` and has no extra spaces
 2. Check key is enabled in Google Cloud Console
 3. Ensure Gemini API is enabled for your project
@@ -71,6 +76,7 @@ Google Gemini offers a **free tier** with generous limits:
 ### "Quota Exceeded" Error
 
 **Solution**:
+
 - Wait 1 minute and retry
 - Reduce batch size to 3-5
 - Upgrade to paid tier in Google Cloud Console

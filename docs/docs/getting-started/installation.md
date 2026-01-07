@@ -30,6 +30,7 @@ Google Gemini offers a free tier with generous limits for testing. You can start
 ### 2. WooCommerce with WPML
 
 WooTUI is designed to work with:
+
 - **WooCommerce** - Your WordPress e-commerce plugin
 - **WPML (WordPress Multilingual Plugin)** - For managing translations
 
@@ -38,6 +39,7 @@ If you haven't set up WPML yet, you can still use WooTUI—just note that you'll
 ### 3. Supported Operating Systems
 
 WooTUI works on:
+
 - macOS (ARM64 and x64)
 - Windows (x64)
 - Linux (x64 and ARM64)
@@ -55,6 +57,7 @@ curl -sf https://ashesofphoenix.github.io/wootui/install | bash
 ```
 
 This script will:
+
 - Download the latest WooTUI binary for your architecture
 - Install it to `~/.local/bin/wootui`
 - Make it executable
@@ -79,6 +82,7 @@ irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
 ```
 
 This script will:
+
 - Download the latest WooTUI binary for Windows
 - Install it to `%LOCALAPPDATA%\Programs\wootui`
 - Add it to your PATH automatically
@@ -158,6 +162,7 @@ You'll see:
 
 :::tip Configuration Persistence
 Your settings are saved automatically to:
+
 - **macOS/Linux**: `~/.config/wootui/config.json`
 - **Windows**: `%APPDATA%\wootui\config.json`
 
@@ -173,6 +178,7 @@ You only need to enter your API key once!
 **Solution**: Add the installation directory to your PATH.
 
 **macOS/Linux:**
+
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 ```
@@ -208,11 +214,13 @@ chmod +x ~/.local/bin/wootui
 **Solution**: Update your system's SSL certificates:
 
 **macOS:**
+
 ```bash
 brew install openssl
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt-get update && sudo apt-get install ca-certificates
 ```
@@ -224,12 +232,14 @@ sudo apt-get update && sudo apt-get install ca-certificates
 If you need to uninstall WooTUI:
 
 **macOS/Linux:**
+
 ```bash
 rm ~/.local/bin/wootui
 rm -rf ~/.config/wootui
 ```
 
 **Windows:**
+
 ```powershell
 Remove-Item "$env:LOCALAPPDATA\Programs\wootui" -Recurse
 Remove-Item "$env:APPDATA\wootui" -Recurse
@@ -244,6 +254,7 @@ Now that WooTUI is installed, let's translate your first product!
 ➡️ [Translate Your First Product](./first-translation.md)
 
 Or learn more about:
+
 - [Understanding the Interface](./understanding-the-interface.md)
 - [Configuration Settings](../configuration/settings-overview.md)
 - [Getting a Gemini API Key](../configuration/gemini-api-setup.md)

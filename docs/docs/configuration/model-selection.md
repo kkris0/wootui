@@ -9,14 +9,17 @@ Choose between Gemini Pro and Flash models based on your needs.
 ## Available Models
 
 ### gemini-2.5-pro (Default)
+
 **Best for**: Quality over speed
 
 **Pros**:
+
 - Highest translation quality
 - Better context understanding
 - More natural phrasing
 
 **Cons**:
+
 - Slower (~2x vs flash)
 - More expensive (~5x vs flash)
 
@@ -27,14 +30,17 @@ Choose between Gemini Pro and Flash models based on your needs.
 ---
 
 ### gemini-2.5-flash
+
 **Best for**: Speed and cost savings
 
 **Pros**:
+
 - Much faster (~2x speed)
 - Much cheaper (~5x cheaper)
 - Still good quality for simple content
 
 **Cons**:
+
 - Slightly less natural phrasing
 - May miss nuance in complex descriptions
 
@@ -48,9 +54,9 @@ Choose between Gemini Pro and Flash models based on your needs.
 
 **Example**: 100 products with detailed descriptions
 
-| Model | Cost | Time |
-|-------|------|------|
-| gemini-2.5-pro | $0.15-0.30 | ~3 min |
+| Model            | Cost       | Time     |
+| ---------------- | ---------- | -------- |
+| gemini-2.5-pro   | $0.15-0.30 | ~3 min   |
 | gemini-2.5-flash | $0.03-0.06 | ~1.5 min |
 
 ---
@@ -67,18 +73,21 @@ Choose between Gemini Pro and Flash models based on your needs.
 ## Recommendations
 
 ### Use gemini-pro for:
+
 - Customer-facing product descriptions
 - SEO meta titles and descriptions
 - Brand-sensitive content
 - First translation (validate quality)
 
 ### Use gemini-flash for:
+
 - Internal product notes
 - Large catalog bulk translations
 - Simple product specifications
 - Re-translations after validating with pro
 
 ### Mix Strategy:
+
 1. Translate 10 products with pro
 2. Validate quality
 3. If acceptable, switch to flash for remaining 990 products
