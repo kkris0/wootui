@@ -8,7 +8,7 @@
 
 ![WooTUI Demo](wootui-demo.png)
 
-[Documentation](https://ashesofphoenix.github.io/wootui/) • [Report Bug](https://github.com/ashesofphoenix/wootui/issues)
+[Documentation](https://kkris0.github.io/wootui/) • [Report Bug](https://github.com/kkris0/wootui/issues)
 
 </div>
 
@@ -33,13 +33,13 @@ WooTUI is a terminal application that translates WooCommerce product catalogs in
 ### macOS / Linux
 
 ```bash
-curl -sf https://ashesofphoenix.github.io/wootui/install | bash
+curl -sf https://kkris0.github.io/wootui/install | bash
 ```
 
 ### Windows
 
 ```powershell
-irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
+irm https://kkris0.github.io/wootui/install.ps1 | iex
 ```
 
 **Requirements:**
@@ -63,18 +63,18 @@ irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
    - Review cost estimate
    - Translate and export
 
-**First-time user?** Check out the [5-minute tutorial](https://ashesofphoenix.github.io/wootui/docs/getting-started/first-translation).
+**First-time user?** Check out the [5-minute tutorial](https://kkris0.github.io/wootui/docs/getting-started/first-translation).
 
 ---
 
 ## Documentation
 
-Full documentation is available at **[ashesofphoenix.github.io/wootui](https://ashesofphoenix.github.io/wootui/)**
+Full documentation is available at **[kkris0.github.io/wootui](https://kkris0.github.io/wootui/)**
 
-- [Getting Started](https://ashesofphoenix.github.io/wootui/docs/getting-started/installation)
-- [WPML Integration](https://ashesofphoenix.github.io/wootui/docs/category/wpml-integration)
-- [Keyboard Shortcuts](https://ashesofphoenix.github.io/wootui/docs/reference/keyboard-shortcuts)
-- [Troubleshooting](https://ashesofphoenix.github.io/wootui/docs/category/troubleshooting)
+- [Getting Started](https://kkris0.github.io/wootui/docs/getting-started/installation)
+- [WPML Integration](https://kkris0.github.io/wootui/docs/category/wpml-integration)
+- [Keyboard Shortcuts](https://kkris0.github.io/wootui/docs/reference/keyboard-shortcuts)
+- [Troubleshooting](https://kkris0.github.io/wootui/docs/category/troubleshooting)
 
 ---
 
@@ -82,7 +82,7 @@ Full documentation is available at **[ashesofphoenix.github.io/wootui](https://a
 
 Contributions are welcome! Here's how you can help:
 
-1. **Report bugs** via [GitHub Issues](https://github.com/ashesofphoenix/wootui/issues)
+1. **Report bugs** via [GitHub Issues](https://github.com/kkris0/wootui/issues)
 2. **Suggest features** by opening a discussion
 3. **Submit PRs** for bug fixes or enhancements
 
@@ -90,7 +90,7 @@ Contributions are welcome! Here's how you can help:
 
 ```bash
 # Clone the repository
-git clone https://github.com/ashesofphoenix/wootui.git
+git clone https://github.com/kkris0/wootui.git
 cd wootui
 
 # Install dependencies
@@ -119,10 +119,10 @@ See [CLAUDE.md](CLAUDE.md) for detailed development guidelines.
 
 ## License
 
-MIT © [Kristjan Krizman](https://github.com/ashesofphoenix)
+MIT © [Kristjan Krizman](https://x.com/kristjankrizman)
 
 ---
 
 <div align="center">
-Made with ☕ for the WooCommerce community
+Made with ☕ for the WooCommerce founders
 </div>
