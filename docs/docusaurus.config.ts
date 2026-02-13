@@ -15,14 +15,14 @@ const config: Config = {
     },
 
     // Set the production url of your site here
-    url: 'https://ashesofphoenix.github.io/',
+    url: 'https://kkris0.github.io/',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: '/wootui/',
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: 'ashesofphoenix', // Usually your GitHub org/user name.
+    organizationName: 'kkris0', // Usually your GitHub org/user name.
     projectName: 'wootui', // Usually your repo name.
 
     onBrokenLinks: 'throw',
@@ -78,7 +78,7 @@ const config: Config = {
                     label: 'Docs',
                 },
                 {
-                    href: 'https://github.com/ashesofphoenix/wootui',
+                    href: 'https://github.com/kkris0/wootui',
                     label: 'GitHub',
                     position: 'right',
                 },
@@ -105,7 +105,7 @@ const config: Config = {
                     items: [
                         {
                             label: 'GitHub',
-                            href: 'https://github.com/ashesofphoenix/wootui',
+                            href: 'https://github.com/kkris0/wootui',
                         },
                     ],
                 },

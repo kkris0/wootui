@@ -360,7 +360,7 @@ Now that you've completed your first translation, explore more advanced features
 
 **Support:**
 
-- Report issues: [GitHub Issues](https://github.com/ashesofphoenix/wootui/issues)
-- Ask questions: [GitHub Discussions](https://github.com/ashesofphoenix/wootui/discussions)
+- Report issues: [GitHub Issues](https://github.com/kkris0/wootui/issues)
+- Ask questions: [GitHub Discussions](https://github.com/kkris0/wootui/discussions)
 
 Happy translating! 🚀

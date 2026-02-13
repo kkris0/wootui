@@ -157,7 +157,7 @@ If you encounter any error:
 
 If errors persist:
 
-1. **Check GitHub Issues**: [github.com/ashesofphoenix/wootui/issues](https://github.com/ashesofphoenix/wootui/issues)
+1. **Check GitHub Issues**: [github.com/kkris0/wootui/issues](https://github.com/kkris0/wootui/issues)
 2. **Open New Issue**: Include error message, CSV sample (without sensitive data), WooTUI version
 3. **Provide Details**: OS, WooCommerce version, WPML version, steps to reproduce
 

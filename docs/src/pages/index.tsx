@@ -124,14 +124,14 @@ function InstallationSection() {
                 <div className={styles.installCommand}>
                     <Heading as="h3">Mac OS</Heading>
                     <CodeBlock language="bash">
-                        curl -sf https://ashesofphoenix.github.io/wootui/install | bash
+                        curl -sf https://kkris0.github.io/wootui/install | bash
                     </CodeBlock>
                 </div>
 
                 <div className={styles.installCommand}>
                     <Heading as="h3">Windows</Heading>
                     <CodeBlock language="powershell">
-                        irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
+                        irm https://kkris0.github.io/wootui/install.ps1 | iex
                     </CodeBlock>
                 </div>
             </div>

@@ -25,7 +25,7 @@ Set-StrictMode -Version Latest
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 # --- Configuration ---
-$RepoOwner = "ashesofphoenix"
+$RepoOwner = "kkris0"
 $RepoName = "wootui"
 $AppName = "wootui"
 $InstallDir = "$env:USERPROFILE\.wootui\bin"
@@ -60,7 +60,7 @@ Options:
     -NoModifyPath       Don't modify the User PATH environment variable
 
 Examples:
-    irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
+    irm https://kkris0.github.io/wootui/install.ps1 | iex
     & { irm ... } -Version 1.0.180
 "@
     exit 0
@@ -183,5 +183,5 @@ Write-Color "░▀░▀░ ▀▀▀▀ ▀▀▀▀ " -Color DarkGray -NoNewL
 Write-Host ""
 Write-Host ""
 Write-Color "For more information visit " -Color DarkGray -NoNewLine
-Write-Color "https://ashesofphoenix.github.io/wootui" -Color White
+Write-Color "https://kkris0.github.io/wootui" -Color White
 Write-Host ""

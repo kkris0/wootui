@@ -92,7 +92,7 @@ Ready to translate your first product? Head over to [Installation](./getting-sta
 - **Getting Started**: New to WooTUI? Check out our [Getting Started Guide](./getting-started/installation.md)
 - **Workflows**: Learn common translation patterns in [Workflows](./workflows/basic-product-translation.md)
 - **Troubleshooting**: Run into issues? See [Troubleshooting](./troubleshooting/common-errors.md)
-- **GitHub**: Report bugs or request features at [github.com/ashesofphoenix/wootui](https://github.com/ashesofphoenix/wootui)
+- **GitHub**: Report bugs or request features at [github.com/kkris0/wootui](https://github.com/kkris0/wootui)
 
 ## What's Next?
 

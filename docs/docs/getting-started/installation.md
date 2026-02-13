@@ -53,7 +53,7 @@ WooTUI works on:
 Open your terminal and run:
 
 ```bash
-curl -sf https://ashesofphoenix.github.io/wootui/install | bash
+curl -sf https://kkris0.github.io/wootui/install | bash
 ```
 
 This script will:
@@ -78,7 +78,7 @@ source ~/.zshrc
 Open PowerShell and run:
 
 ```powershell
-irm https://ashesofphoenix.github.io/wootui/install.ps1 | iex
+irm https://kkris0.github.io/wootui/install.ps1 | iex
 ```
 
 This script will:
@@ -100,13 +100,13 @@ If you're using Windows Terminal, `Ctrl+Enter` may not work due to a [known issu
 For **x64** (most desktop systems):
 
 ```bash
-curl -sf https://ashesofphoenix.github.io/wootui/install | bash
+curl -sf https://kkris0.github.io/wootui/install | bash
 ```
 
 For **ARM64** (Raspberry Pi, ARM servers):
 
 ```bash
-curl -sf https://ashesofphoenix.github.io/wootui/install-arm64 | bash
+curl -sf https://kkris0.github.io/wootui/install-arm64 | bash
 ```
 
 The script will install WooTUI to `~/.local/bin/wootui` and make it executable.
@@ -189,7 +189,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ### Installation script fails or times out
 
-**Solution**: Download the binary manually from the [GitHub Releases page](https://github.com/ashesofphoenix/wootui/releases) and place it in your PATH.
+**Solution**: Download the binary manually from the [GitHub Releases page](https://github.com/kkris0/wootui/releases) and place it in your PATH.
 
 ---
 
