@@ -1,38 +1,40 @@
 import { TextAttributes } from '@opentui/core';
 
+const FooterItem = ({
+    label,
+    description,
+    wrap = false,
+}: {
+    label: string;
+    description: string;
+    wrap?: boolean;
+}) => {
+    return (
+        <box flexDirection="row" alignItems="center">
+            {wrap && <text attributes={TextAttributes.DIM}>[</text>}
+            <text attributes={TextAttributes.BOLD}>{label}</text>
+            {wrap && <text attributes={TextAttributes.DIM}>]</text>}
+            <text attributes={TextAttributes.DIM}> </text>
+            <text attributes={TextAttributes.DIM}>{description}</text>
+        </box>
+    );
+};
+
 export const Footer = ({ configurationOpen }: { configurationOpen: boolean }) => {
     if (configurationOpen) {
         return (
             <box flexDirection="row" columnGap={4}>
-                <box flexDirection="row" alignItems="center">
-                    <text attributes={TextAttributes.BOLD}>esc</text>
-                    <text attributes={TextAttributes.DIM}> back</text>
-                </box>
-                <box flexDirection="row" alignItems="center">
-                    <text attributes={TextAttributes.BOLD}>tab</text>
-                    <text attributes={TextAttributes.DIM}> navigate</text>
-                </box>
+                <FooterItem label="esc" description="back" />
+                <FooterItem label="tab" description="navigate" />
             </box>
         );
     }
     return (
         <box flexDirection="row" columnGap={4}>
-            <box flexDirection="row" alignItems="center">
-                <text attributes={TextAttributes.BOLD}>ctrl ↵</text>
-                <text attributes={TextAttributes.DIM}> submit</text>
-            </box>
-            <box flexDirection="row" alignItems="center">
-                <text attributes={TextAttributes.BOLD}>tab</text>
-                <text attributes={TextAttributes.DIM}> navigate</text>
-            </box>
-            <box flexDirection="row" alignItems="center">
-                <text attributes={TextAttributes.BOLD}>esc</text>
-                <text attributes={TextAttributes.DIM}> reset</text>
-            </box>
-            <box flexDirection="row" alignItems="center">
-                <text attributes={TextAttributes.BOLD}>^k</text>
-                <text attributes={TextAttributes.DIM}> actions</text>
-            </box>
+            <FooterItem label="ctrl ↵ " description="submit" />
+            <FooterItem label="tab" description="navigate" />
+            <FooterItem label="esc" description="reset" />
+            <FooterItem label="^k" description="actions" />
         </box>
     );
 };
