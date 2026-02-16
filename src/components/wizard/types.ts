@@ -1,5 +1,13 @@
 import type { ReactNode } from 'react';
 
+/** Action button configuration for a wizard step */
+export interface WizardStepAction {
+    /** Label text for the action button */
+    label: string;
+    /** Click handler for the action */
+    onAction: () => void;
+}
+
 export enum WizardStepStatus {
     IDLE = 'idle',
     RUNNING = 'running',
@@ -41,6 +49,13 @@ export interface WizardStepContext<TValues extends object> {
 }
 
 /**
+ * Action definition - can be a static action or a function that receives context
+ */
+export type WizardStepActionDef<TValues extends object> =
+    | WizardStepAction
+    | ((ctx: WizardStepContext<TValues>) => WizardStepAction);
+
+/**
  * Definition for a wizard step
  */
 export interface WizardStepDefinition<TValues extends object> {
@@ -52,6 +67,8 @@ export interface WizardStepDefinition<TValues extends object> {
     render: (ctx: WizardStepContext<TValues>, recenterScrollbox?: () => void) => ReactNode;
     /** Optional async submit handler - called when ctrl+return is pressed on this step */
     onSubmit?: (values: TValues, context: WizardStepContext<TValues>) => Promise<unknown> | unknown;
+    /** Optional action button rendered right-aligned on the title row. Can be static or a function receiving context. */
+    action?: WizardStepActionDef<TValues>;
 }
 
 /**

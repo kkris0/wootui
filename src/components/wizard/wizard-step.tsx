@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core';
 import { type ReactNode } from 'react';
 import { Spinner } from '@/components/spinner';
-import type { WizardStepStatusType } from './types';
+import type { WizardStepAction, WizardStepStatusType } from './types';
 import { useWizardContext } from './wizard-context';
 
 const ICONS = {
@@ -40,6 +40,8 @@ export interface WizardStepProps {
     isLocked: boolean;
     /** Step content */
     children?: ReactNode;
+    /** Optional action button rendered right-aligned on the title row */
+    action?: WizardStepAction;
 }
 
 /**
@@ -83,6 +85,7 @@ export function WizardStep({
     status,
     isLocked,
     children,
+    action,
 }: WizardStepProps) {
     const { focusedStepIndex, setFocusedStepIndex } = useWizardContext();
     const isFocused = focusedStepIndex === index;
@@ -107,11 +110,23 @@ export function WizardStep({
                 }
             }}
         >
-            <box flexDirection="row" columnGap={1}>
-                <text fg={titleColor} attributes={TextAttributes.BOLD}>
-                    {title}
-                </text>
-                {status === 'running' && <Spinner color={COLORS.running} label="Processing..." />}
+            <box flexDirection="row" justifyContent="space-between" width="100%">
+                <box flexDirection="row" columnGap={1}>
+                    <text fg={titleColor} attributes={TextAttributes.BOLD}>
+                        {title}
+                    </text>
+                    {status === 'running' && (
+                        <Spinner color={COLORS.running} label="Processing..." />
+                    )}
+                </box>
+                {action && !isLocked && (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: Terminal UI click handler
+                    <box onMouseDown={action.onAction}>
+                        <text fg={titleColor} attributes={TextAttributes.DIM}>
+                            {action.label}
+                        </text>
+                    </box>
+                )}
             </box>
             <box flexDirection="column" paddingTop={1}>
                 <box>

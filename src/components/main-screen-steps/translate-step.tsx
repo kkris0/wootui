@@ -86,7 +86,10 @@ export function createTranslateStep(): WizardStepDefinition<TranslateWizardValue
                 throw error;
             }
 
-            fs.mkdirSync(outputDir, { recursive: true });
+            // bun windows bug, doesn't fail silently and EEXIST
+            if (!fs.existsSync(outputDir)) {
+                fs.mkdirSync(outputDir, { recursive: true });
+            }
 
             const languages = values.targetLanguages;
             const totalLanguages = languages.length;

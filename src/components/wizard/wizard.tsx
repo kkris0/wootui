@@ -1,27 +1,32 @@
 import type { ScrollBoxRenderable } from '@opentui/core';
 import { useKeyboard } from '@opentui/react';
 import {
+    Children,
+    isValidElement,
+    type ReactElement,
+    type ReactNode,
     useCallback,
     useEffect,
     useMemo,
     useRef,
     useState,
-    Children,
-    isValidElement,
-    type ReactElement,
-    type ReactNode,
 } from 'react';
 import {
-    ActionPanelOverlay,
-    ActionPanel,
     Action,
-    type ActionProps,
+    ActionPanel,
+    ActionPanelOverlay,
+    type ActionPanelProps,
     ActionPanelSection,
     type ActionPanelSectionProps,
-    type ActionPanelProps,
+    type ActionProps,
 } from '@/components/action-panel';
 import type { KeyboardShortcut } from '@/components/form/constants';
-import type { WizardProps, WizardStepContext, WizardStepState } from '@/components/wizard/types';
+import {
+    WizardStepStatus,
+    type WizardProps,
+    type WizardStepContext,
+    type WizardStepState,
+} from '@/components/wizard/types';
 import { WizardContextProvider, type WizardContextValue } from '@/components/wizard/wizard-context';
 import { WizardStep } from '@/components/wizard/wizard-step';
 
@@ -120,7 +125,7 @@ export function Wizard<TValues extends object>({
 
     const getStepState = useCallback(
         (index: number): WizardStepState => {
-            return stepStates.get(index) ?? { status: 'idle' };
+            return stepStates.get(index) ?? { status: WizardStepStatus.IDLE };
         },
         [stepStates]
     );
@@ -128,7 +133,7 @@ export function Wizard<TValues extends object>({
     const setStepState = useCallback((index: number, state: Partial<WizardStepState>) => {
         setStepStates(prev => {
             const next = new Map(prev);
-            const current = next.get(index) ?? { status: 'idle' };
+            const current = next.get(index) ?? { status: WizardStepStatus.IDLE };
             next.set(index, { ...current, ...state });
             return next;
         });
@@ -138,7 +143,7 @@ export function Wizard<TValues extends object>({
         (index: number): boolean => {
             if (index === 0) return false;
             const prevState = getStepState(index - 1);
-            return prevState.status !== 'success';
+            return prevState.status !== WizardStepStatus.SUCCESS;
         },
         [getStepState]
     );
@@ -213,7 +218,7 @@ export function Wizard<TValues extends object>({
         if (isStepLocked(focusedStepIndex)) return;
 
         isSubmittingRef.current = true;
-        setStepState(focusedStepIndex, { status: 'running', error: undefined });
+        setStepState(focusedStepIndex, { status: WizardStepStatus.RUNNING, error: undefined });
 
         const nextStepIndex = focusedStepIndex + 1;
         const hasNextStep = nextStepIndex < steps.length;
@@ -238,14 +243,14 @@ export function Wizard<TValues extends object>({
         try {
             const result = await step.onSubmit?.(values, stepContext);
             setStepState(focusedStepIndex, {
-                status: 'success',
+                status: WizardStepStatus.SUCCESS,
                 data: result,
                 error: undefined,
             });
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'An error occurred';
             setStepState(focusedStepIndex, {
-                status: 'error',
+                status: WizardStepStatus.ERROR,
                 error: errorMessage,
             });
         } finally {
@@ -400,6 +405,12 @@ export function Wizard<TValues extends object>({
                             previousStepState,
                         };
 
+                        // Resolve action - can be static or a function receiving context
+                        const resolvedAction =
+                            typeof step.action === 'function'
+                                ? step.action(stepContext)
+                                : step.action;
+
                         return (
                             <WizardStep
                                 key={step.id}
@@ -409,6 +420,7 @@ export function Wizard<TValues extends object>({
                                 isLast={index === visibleSteps.length - 1}
                                 status={stepState.status}
                                 isLocked={locked}
+                                action={resolvedAction}
                             >
                                 {step.render(stepContext, recenterScrollbox)}
                             </WizardStep>

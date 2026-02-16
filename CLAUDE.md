@@ -97,10 +97,10 @@ The application uses a custom step-based wizard component (`src/components/wizar
 
 - `wizard.tsx` - Main wizard component with keyboard navigation (Tab/Shift+Tab between steps, Ctrl+Return to submit)
 - `wizard-context.tsx` - Context provider for wizard state management
-- `wizard-step.tsx` - Individual step wrapper with status indicators
-- `types.ts` - Defines `WizardStepStatus` enum (IDLE, RUNNING, SUCCESS, ERROR) and related types
+- `wizard-step.tsx` - Individual step wrapper with status indicators and optional action button
+- `types.ts` - Defines `WizardStepStatus` enum (IDLE, RUNNING, SUCCESS, ERROR), `WizardStepAction`, and related types
 - Steps are locked until previous step succeeds (async step submission)
-- Uses `WizardStepDefinition` with `render(ctx)` and `onSubmit()` lifecycle
+- Uses `WizardStepDefinition` with `render(ctx)`, `onSubmit()`, and optional `action` for title-row buttons
 
 **Main Screen Steps:**
 Each wizard step is defined in `src/components/main-screen-steps/` as a separate module:
@@ -121,6 +121,14 @@ export function createXxxStep(): WizardStepDefinition<TranslateWizardValues> {
     return {
         id: 'step-id',
         title: 'Step Title',
+        // Optional: action button on title row (can be static or function for context access)
+        action: ctx => ({
+            label: 'SELECT FILE',
+            onAction: () => {
+                const file = pickFileSync();
+                if (file) ctx.setValue('filePath', file);
+            },
+        }),
         render: (ctx) => {
             // Can read config directly inside render if needed
             const outputDir = appConfig.get('outputDir');
@@ -195,6 +203,79 @@ Located in `src/utils/`:
 - `TranslationMatrix` (`src/components/translation-matrix/`) - Visual grid showing translation coverage
 - `StepBox` (`src/components/step-box.tsx`) - Styled container for wizard steps with status indicators
 - `Footer` (`src/components/footer.tsx`) - Bottom bar with keyboard shortcuts
+
+**Form/Wizard Step Actions:**
+
+Both `FormTextField` and `WizardStepDefinition` support an optional `action` prop that renders a clickable button right-aligned on the step title row. This is used for file/folder pickers.
+
+```typescript
+// FormTextField action (static)
+<Form.TextField
+    title="Output Directory"
+    value={outputDir}
+    onChange={setOutputDir}
+    action={{
+        label: 'SELECT OUTPUT FOLDER',
+        onAction: () => {
+            const folder = pickFolderSync();
+            if (folder) setOutputDir(folder);
+        },
+    }}
+/>
+
+// WizardStepDefinition action (context-aware function)
+export function createCsvPathStep(): WizardStepDefinition<TranslateWizardValues> {
+    return {
+        id: 'csv-path',
+        title: 'WooCommerce CSV',
+        action: ctx => ({
+            label: 'SELECT CSV FILE',
+            onAction: () => {
+                const file = pickFileSync('Select CSV', [{ name: 'CSV', extensions: ['csv'] }]);
+                if (file) ctx.setValue('csvPath', file);
+            },
+        }),
+        render: ctx => <input ... />,
+    };
+}
+```
+
+**Action Types:**
+
+- `FormStepAction` - Static action with `{ label: string; onAction: () => void }`
+- `WizardStepAction` - Same interface as FormStepAction
+- `WizardStepActionDef<TValues>` - Either static or a function `(ctx) => WizardStepAction` for context access
+
+### Native File/Folder Picker
+
+The `src/utils/folder-picker.ts` utility provides cross-platform native file and folder picker dialogs:
+
+```typescript
+import { pickFileSync, pickFolderSync, type FileTypeFilter } from '@/utils/folder-picker';
+
+// Pick a folder
+const folder = pickFolderSync('Select output directory');
+// Returns: '/Users/name/Documents' or null if cancelled
+
+// Pick a file with type filter
+const file = pickFileSync('Select CSV file', [
+    { name: 'CSV Files', extensions: ['csv'] },
+]);
+// Returns: '/path/to/file.csv' or null if cancelled
+```
+
+**Platform Support:**
+
+- **macOS**: Uses AppleScript (`osascript`) to open Finder dialogs
+- **Windows**: Uses PowerShell with `FolderBrowserDialog` / `OpenFileDialog`
+- **Linux**: Uses `zenity` (GTK) with fallback to `kdialog` (KDE)
+
+**Notes:**
+
+- Both functions are synchronous (`execSync`) - this is intentional since native dialogs are modal
+- The TUI pauses while the dialog is open (user's attention is on the dialog)
+- Returns `null` if user cancels or an error occurs
+- `FileTypeFilter` interface: `{ name: string; extensions: string[] }` (extensions without dots)
 
 ### Hooks
 
@@ -279,6 +360,7 @@ export function useOutputDir(): string {
 - `src/utils/prompts.ts` - Gemini system and user prompts
 - `src/utils/attibute_parser.ts` - WooCommerce attribute column mapping and extraction
 - `src/utils/dynamic_schema.ts` - Zod schema generation for CSV validation
+- `src/utils/folder-picker.ts` - Cross-platform native file/folder picker dialogs
 - `src/types/language-code.ts` - Supported language codes enum
 - `src/types/config.ts` - User configuration schema (ConfigSchema interface)
 - `src/components/main-screen-steps/` - Wizard step definitions and shared types

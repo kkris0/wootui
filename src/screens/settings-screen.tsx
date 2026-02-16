@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { type ConfirmAction, ConfirmExitPanel } from '@/components/confirm-exit-panel';
 import { Form } from '@/components/form';
 import { appConfig } from '@/utils/config';
+import { pickFolderSync } from '@/utils/folder-picker';
 
 export interface SettingsScreenProps {
     onBack: () => void;
@@ -124,6 +125,15 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                     description="Where WPML-ready translated CSVs are saved after translation completes."
                     value={formState.outputDir}
                     onChange={val => updateField('outputDir', val)}
+                    action={{
+                        label: 'SELECT OUTPUT FOLDER',
+                        onAction: () => {
+                            const folder = pickFolderSync('Select output directory');
+                            if (folder) {
+                                updateField('outputDir', folder);
+                            }
+                        },
+                    }}
                 />
             </Form>
 

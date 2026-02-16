@@ -3,6 +3,14 @@ import type { ReactNode } from 'react';
 import { COLORS, getStepIcon } from './constants';
 import { useFormContext } from './form-context';
 
+/** Action button configuration for a form step */
+export interface FormStepAction {
+    /** Label text for the action button */
+    label: string;
+    /** Click handler for the action */
+    onAction: () => void;
+}
+
 export interface FormStepProps {
     /** Title of the step */
     title: string;
@@ -14,9 +22,11 @@ export interface FormStepProps {
     isLast: boolean;
     /** Step content */
     children?: ReactNode;
+    /** Optional action button rendered right-aligned on the title row */
+    action?: FormStepAction;
 }
 
-export function FormStep({ title, index, isFirst, isLast, children }: FormStepProps) {
+export function FormStep({ title, index, isFirst, isLast, children, action }: FormStepProps) {
     const { focusedStepIndex, setFocusedStepIndex } = useFormContext();
     const isFocused = focusedStepIndex === index;
     const color = isFocused ? COLORS.focused : COLORS.unfocused;
@@ -37,10 +47,18 @@ export function FormStep({ title, index, isFirst, isLast, children }: FormStepPr
             bottomBorder={false}
             onMouseDown={() => setFocusedStepIndex(index)}
         >
-            <box flexDirection="row" columnGap={1}>
+            <box flexDirection="row" justifyContent="space-between" width="100%">
                 <text fg={color} attributes={TextAttributes.BOLD}>
                     {title}
                 </text>
+                {action && (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: Terminal UI click handler
+                    <box onMouseDown={action.onAction}>
+                        <text fg={color} attributes={TextAttributes.DIM}>
+                            {action.label}
+                        </text>
+                    </box>
+                )}
             </box>
             <box flexDirection="column">
                 <box>

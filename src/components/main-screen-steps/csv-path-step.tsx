@@ -1,7 +1,8 @@
-import { wooCsvParser } from '@/utils/woo-csv';
-import type { WizardStepDefinition } from '@/components/wizard';
 import type { TranslateWizardValues } from '@/components/main-screen-steps/types';
 import { DEFAULT_SEO_META } from '@/components/main-screen-steps/types';
+import type { WizardStepDefinition } from '@/components/wizard';
+import { pickFileSync } from '@/utils/folder-picker';
+import { wooCsvParser } from '@/utils/woo-csv';
 
 /**
  * Creates the CSV path input step definition
@@ -10,6 +11,17 @@ export function createCsvPathStep(): WizardStepDefinition<TranslateWizardValues>
     return {
         id: 'csv-path',
         title: 'WooCommerce CSV',
+        action: ctx => ({
+            label: 'SELECT CSV FILE',
+            onAction: () => {
+                const file = pickFileSync('Select WooCommerce CSV file', [
+                    { name: 'CSV Files', extensions: ['csv'] },
+                ]);
+                if (file) {
+                    ctx.setValue('csvPath', file);
+                }
+            },
+        }),
         render: ctx => (
             <input
                 placeholder="/path/to/woocommerce-export.csv"

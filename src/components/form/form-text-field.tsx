@@ -1,7 +1,7 @@
 import { TextAttributes } from '@opentui/core';
-import { useFormContext } from './form-context';
-import { FormStep } from './form-step';
 import { COLORS } from './constants';
+import { useFormContext } from './form-context';
+import { FormStep, type FormStepAction } from './form-step';
 
 export interface FormTextFieldProps {
     /** Title of the field */
@@ -20,6 +20,8 @@ export interface FormTextFieldProps {
     id?: string;
     /** Validation error message */
     error?: string;
+    /** Optional action button rendered right-aligned on the title row */
+    action?: FormStepAction;
     /** Internal: step index (set by Form) */
     _index?: number;
     /** Internal: whether this is the first step */
@@ -35,6 +37,7 @@ export function FormTextField({
     description,
     onChange,
     error,
+    action,
     _index = 0,
     _isFirst = false,
     _isLast = false,
@@ -43,7 +46,7 @@ export function FormTextField({
     const isFocused = focusedStepIndex === _index;
 
     return (
-        <FormStep title={title} index={_index} isFirst={_isFirst} isLast={_isLast}>
+        <FormStep title={title} index={_index} isFirst={_isFirst} isLast={_isLast} action={action}>
             <input
                 placeholder={placeholder}
                 value={value}
