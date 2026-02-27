@@ -1,11 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-**wootui** is a Terminal User Interface (TUI) application built with OpenTUI and React that translates WooCommerce product catalogs to multiple languages using Google's Gemini AI. It supports WPML (WordPress Multilingual Plugin) format and handles complex product attributes, metadata, and SEO fields.
-
 ## Development Commands
 
 ```bash
@@ -50,37 +44,9 @@ npm version 1.2.3   # Set specific version
 
 ### Entry Point & Application Flow
 
-- `src/index.tsx` - App entry point with screen navigation (Main/Settings) and Toaster setup
 - Uses `@opentui/core` renderer and `@opentui/react` for terminal rendering
-- Configuration managed via `conf` package as module-level singleton in `src/utils/config.ts`
+  `
 - **Global config access**: Any file (component, hook, utility function) can import and read `appConfig` directly - no need to pass config as props or parameters
-
-### Path Aliases
-
-TypeScript path aliases are configured in `tsconfig.json` for cleaner imports:
-
-- `@/*` - Maps to `src/*` (e.g., `@/types/config`, `@/utils/woo-csv`)
-- `@/utils/*` - Maps to `src/utils/*`
-- `@/hooks/*` - Maps to `src/hooks/*`
-- `@/components/*` - Maps to `src/components/*`
-- `@/screens/*` - Maps to `src/screens/*`
-- `@/types/*` - Maps to `src/types/*`
-
-**Example:**
-
-```typescript
-// Good: Using path alias
-import { appConfig } from "@/utils/config";
-import type { LanguageCode } from "@/types/language-code";
-
-// Also acceptable: Relative import
-import { appConfig } from "../utils/config";
-```
-
-### Core Screens
-
-- **MainScreen** (`src/screens/main-screen.tsx`) - Multi-step wizard for translation workflow
-- **SettingsScreen** (`src/screens/settings-screen.tsx`) - Configure API key, model ID, batch size, output directory
 
 ### Wizard System
 
@@ -251,15 +217,19 @@ export function createCsvPathStep(): WizardStepDefinition<TranslateWizardValues>
 The `src/utils/folder-picker.ts` utility provides cross-platform native file and folder picker dialogs:
 
 ```typescript
-import { pickFileSync, pickFolderSync, type FileTypeFilter } from '@/utils/folder-picker';
+import {
+  pickFileSync,
+  pickFolderSync,
+  type FileTypeFilter,
+} from "@/utils/folder-picker";
 
 // Pick a folder
-const folder = pickFolderSync('Select output directory');
+const folder = pickFolderSync("Select output directory");
 // Returns: '/Users/name/Documents' or null if cancelled
 
 // Pick a file with type filter
-const file = pickFileSync('Select CSV file', [
-    { name: 'CSV Files', extensions: ['csv'] },
+const file = pickFileSync("Select CSV file", [
+  { name: "CSV Files", extensions: ["csv"] },
 ]);
 // Returns: '/path/to/file.csv' or null if cancelled
 ```
@@ -308,16 +278,6 @@ export function useOutputDir(): string {
 }
 ```
 
-**Available Hooks:**
-
-- `useOutputDir()` - Returns output directory with consistent default (~/Downloads), reads from `appConfig` internally
-- `useOpenOutputFolder()` - Returns function to open output folder in system file explorer, reads from `appConfig` internally
-- `useInputHandler` - Keyboard input handling with callbacks
-- `useForm` - Form state management
-- `useWizard` - Wizard state management
-
-**Note:** Hooks like `useOutputDir` and `useOpenOutputFolder` previously took `config` as a parameter but now access `appConfig` directly via import. Similarly, utility functions throughout the codebase import and read from `appConfig` directly instead of receiving config values as parameters.
-
 ### OpenTUI-Specific Patterns
 
 **Critical Rules:**
@@ -346,25 +306,6 @@ export function useOutputDir(): string {
 - Boolean variables prefixed with `is`, `has`, `can`
 - Event handlers prefixed with `handle`
 
-**TypeScript:**
-
-- Prefer `interface` over `type` for objects
-- Strict mode enabled
-- JSDoc for public functions
-
-## Key Files
-
-- `src/utils/config.ts` - Application config singleton (`appConfig`) using `conf` package
-- `src/utils/woo-csv.ts` - CSV parsing, product preparation, translation orchestration
-- `src/utils/translate.ts` - Legacy translation logic (reference for prompts/encoding patterns)
-- `src/utils/prompts.ts` - Gemini system and user prompts
-- `src/utils/attibute_parser.ts` - WooCommerce attribute column mapping and extraction
-- `src/utils/dynamic_schema.ts` - Zod schema generation for CSV validation
-- `src/utils/folder-picker.ts` - Cross-platform native file/folder picker dialogs
-- `src/types/language-code.ts` - Supported language codes enum
-- `src/types/config.ts` - User configuration schema (ConfigSchema interface)
-- `src/components/main-screen-steps/` - Wizard step definitions and shared types
-
 ## Important Context
 
 **WPML Integration:**
@@ -372,12 +313,6 @@ export function useOutputDir(): string {
 - The app expects CSVs exported from WooCommerce with WPML plugin
 - Key WPML columns: `Meta: _wpml_import_source_language_code`, `Meta: _wpml_import_language_code`, `Meta: _wpml_import_translation_group`
 - Translation group links source products to their translations
-
-**Gemini API:**
-
-- Uses `gemini-2.5-pro` by default
-- Pricing calculated per 1M tokens (configurable in `src/utils/gemini-pricing.ts`)
-- TOON format is critical for preserving CSV structure through AI translation
 
 **Configuration:**
 
