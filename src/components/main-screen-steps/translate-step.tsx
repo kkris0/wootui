@@ -4,6 +4,7 @@ import { toast } from '@opentui-ui/toast';
 import type { TranslationResults } from '@/types/translation-result';
 import { languageMap } from '@/utils/language-map';
 import { Spinner } from '@/components/spinner';
+import { StepError } from '@/components/step-error';
 import { wooCsvParser } from '@/utils/woo-csv';
 import type { WizardStepDefinition } from '@/components/wizard';
 import { WizardStepStatus } from '@/components/wizard/types';
@@ -29,18 +30,7 @@ export function createTranslateStep(): WizardStepDefinition<TranslateWizardValue
             }
 
             if (prevState?.status === WizardStepStatus.ERROR) {
-                return (
-                    <box flexDirection="column">
-                        <box flexDirection="row">
-                            <text fg="#ef4444" attributes={TextAttributes.BOLD}>
-                                ❌ Error:{' '}
-                            </text>
-                            <text attributes={TextAttributes.DIM}>
-                                {String(prevState.error ?? '')}
-                            </text>
-                        </box>
-                    </box>
-                );
+                return <StepError message={String(prevState.error ?? '')} />;
             }
 
             if (prevState?.status === WizardStepStatus.SUCCESS) {

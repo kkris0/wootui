@@ -1,9 +1,10 @@
 import { TextAttributes } from '@opentui/core';
-import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/components/spinner';
 import { LabelValue } from '@/components/label-value';
+import { Spinner } from '@/components/spinner';
+import { StepError } from '@/components/step-error';
 import type { WizardStepDefinition } from '@/components/wizard';
 import { WizardStepStatus } from '@/components/wizard/types';
+import { languageMap } from '@/utils/language-map';
 import type { CarryData, TranslateWizardValues } from './types';
 
 /**
@@ -22,14 +23,7 @@ export function createTokenAndPriceStep(): WizardStepDefinition<TranslateWizardV
             }
 
             if (prevState?.status === WizardStepStatus.ERROR) {
-                return (
-                    <box flexDirection="row">
-                        <text fg="#ef4444" attributes={TextAttributes.BOLD}>
-                            ❌ Error:{' '}
-                        </text>
-                        <text attributes={TextAttributes.DIM}>{String(prevState.error ?? '')}</text>
-                    </box>
-                );
+                return <StepError message={String(prevState.error ?? '')} />;
             }
 
             if (prevState?.status === WizardStepStatus.SUCCESS && carryData) {

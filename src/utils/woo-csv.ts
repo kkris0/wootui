@@ -14,6 +14,7 @@ import type { WooCsvParseSummary } from '../types/woo-csv-parse-summary.ts';
 import type { WpmlFixedColumns } from '../types/wpml-fixed-columns.ts';
 import { WpmlImportColumns } from '../types/wpml-import-columns.ts';
 import { AttibuteParser, type AttributeColMap, MetaParser } from './attibute_parser';
+import { appConfig } from './config.ts';
 import { createWooProductSchema, type WooRow } from './dynamic_schema';
 import { extractCode } from './extract-code';
 import { estimateGeminiCost, GEMINI_PRICING } from './gemini-pricing';
@@ -23,7 +24,6 @@ import {
     localAttributeLabelsColumnKey,
     type ProductWithTranslationMeta,
 } from './translate';
-import { appConfig } from './config.ts';
 
 class WooCsvParser {
     /**
@@ -74,6 +74,8 @@ class WooCsvParser {
         const dynamicSchema = createWooProductSchema<WpmlFixedColumns>(headers);
         const validationResult = dynamicSchema.safeParse(parsed.data[0]);
 
+        // TODO: Improve user experience by providing more detailed error messages, instead of just throwing an error in the step body
+        // Do we print to console or?
         if (!validationResult.success) {
             throw new WooCsvParseError(
                 `Schema validation failed: ${validationResult.error.message}`,
@@ -89,6 +91,13 @@ class WooCsvParser {
                 (product[WpmlImportColumns.SourceLanguageCode] as string) === '' &&
                 (product[WpmlImportColumns.ImportLanguageCode] as string) !== ''
         );
+
+        if (productSourceTranslations.length === 0) {
+            throw new WooCsvParseError(
+                'No products found with a source language code.',
+                'NO_SOURCE_LANGUAGE_PRODUCTS'
+            );
+        }
 
         const productExistingTranslations = allProducts.filter(
             product =>

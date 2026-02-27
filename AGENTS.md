@@ -318,20 +318,11 @@ export function useOutputDir(): string {
 
 - **Module-level singleton pattern**: Configuration is created once in `src/utils/config.ts` and exported as `appConfig`
 - Stored via `conf` package in user's home directory (`~/.config/wootui/config.json`)
-- Settings with defaults:
-  - `apiKey`: '' (empty, must be configured by user)
-  - `modelId`: 'gemini-2.5-pro'
-  - `batchSize`: 5
-  - `outputDir`: User's Downloads folder (cross-platform via `os.homedir()` + `path.join()`)
 - **Access anywhere via direct import**: `import { appConfig } from '@/utils/config'`
   - Works in components, hooks, utility functions, step definitions, etc.
   - No need to pass config as props or function parameters
-- Read values: `appConfig.get('apiKey')`
-- Write values: `appConfig.set('apiKey', 'new-value')`
 - **No prop drilling or parameter passing**: Import `appConfig` directly where needed instead of passing config values through props or function parameters
 - **Shared instance**: All imports reference the same singleton object; changes via `.set()` are immediately visible to all consumers
-- **Persistence**: Changes are automatically persisted to disk synchronously by the `conf` package
-- Output directory defaults work seamlessly on macOS (`~/Downloads`), Linux (`~/Downloads`), and Windows (`C:\Users\username\Downloads`)
 
 **Config Pattern:**
 
@@ -348,8 +339,7 @@ function translateProducts() {
 }
 
 // Write config
-appConfig.set("modelId", "gemini-2.5-pro");
-appConfig.set("outputDir", "/custom/path");
+appConfig.set("modelId", "gemini-3.1-pro-preview");
 
 // Bad: Don't pass config values as parameters
 function translateProducts(apiKey: string, modelId: string) {

@@ -1,19 +1,20 @@
 import { TextAttributes } from '@opentui/core';
-import type { LanguageCode } from '@/types/language-code';
-import type { WooCsvParseSummary } from '@/types/woo-csv-parse-summary';
-import { WpmlImportColumns } from '@/types/wpml-import-columns';
-import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/components/spinner';
-import { Form } from '../form';
 import { LabelValue } from '@/components/label-value';
-import type { WizardStepDefinition } from '@/components/wizard';
-import { WizardStepStatus } from '@/components/wizard/types';
-import type { Step2Result, TranslateWizardValues } from './types';
 import {
     DEFAULT_SEO_META,
     FIXED_COLUMNS,
     WPML_INTERNAL_COLUMNS,
 } from '@/components/main-screen-steps/types';
+import { Spinner } from '@/components/spinner';
+import { StepError } from '@/components/step-error';
+import type { WizardStepDefinition } from '@/components/wizard';
+import { WizardStepStatus } from '@/components/wizard/types';
+import type { LanguageCode } from '@/types/language-code';
+import type { WooCsvParseSummary } from '@/types/woo-csv-parse-summary';
+import { WpmlImportColumns } from '@/types/wpml-import-columns';
+import { languageMap } from '@/utils/language-map';
+import { Form } from '../form';
+import type { Step2Result, TranslateWizardValues } from './types';
 
 /**
  * Creates the columns selection step definition
@@ -31,19 +32,7 @@ export function createColumnsSelectionStep(): WizardStepDefinition<TranslateWiza
             }
 
             if (prevState?.status === WizardStepStatus.ERROR) {
-                return (
-                    <box
-                        flexDirection="row"
-                        borderColor="#ef4444"
-                        borderStyle="rounded"
-                        padding={1}
-                    >
-                        <text fg="#ef4444" attributes={TextAttributes.BOLD}>
-                            ❌ Error:{' '}
-                        </text>
-                        <text attributes={TextAttributes.DIM}>{String(prevState.error ?? '')}</text>
-                    </box>
-                );
+                return <StepError message={String(prevState.error ?? '')} />;
             }
 
             if (prevState?.status === WizardStepStatus.SUCCESS && summary) {

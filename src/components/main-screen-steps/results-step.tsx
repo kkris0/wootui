@@ -1,10 +1,11 @@
 import { TextAttributes } from '@opentui/core';
-import type { TranslationResults } from '@/types/translation-result';
-import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/components/spinner';
 import { LabelValue } from '@/components/label-value';
+import { Spinner } from '@/components/spinner';
+import { StepError } from '@/components/step-error';
 import type { WizardStepDefinition } from '@/components/wizard';
 import { WizardStepStatus } from '@/components/wizard/types';
+import type { TranslationResults } from '@/types/translation-result';
+import { languageMap } from '@/utils/language-map';
 import type { TranslateWizardValues } from './types';
 
 /**
@@ -23,16 +24,7 @@ export function createResultsStep(): WizardStepDefinition<TranslateWizardValues>
             }
 
             if (prevState?.status === WizardStepStatus.ERROR) {
-                return (
-                    <box flexDirection="column">
-                        <text fg="#ef4444" attributes={TextAttributes.BOLD}>
-                            Translation Failed
-                        </text>
-                        <text attributes={TextAttributes.DIM} marginTop={1}>
-                            {String(prevState.error ?? 'Unknown error')}
-                        </text>
-                    </box>
-                );
+                return <StepError message={String(prevState.error ?? 'Unknown error')} />;
             }
 
             if (prevState?.status === WizardStepStatus.SUCCESS && results) {

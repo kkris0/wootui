@@ -1,16 +1,17 @@
 import { TextAttributes } from '@opentui/core';
 import { toast } from '@opentui-ui/toast';
-import type { LanguageCode } from '@/types/language-code';
-import { languageMap } from '@/utils/language-map';
-import { Spinner } from '@/components/spinner';
-import { wooCsvParser } from '@/utils/woo-csv';
 import { Form } from '@/components/form';
+import { FIXED_COLUMNS } from '@/components/main-screen-steps/types';
+import { Spinner } from '@/components/spinner';
+import { StepError } from '@/components/step-error';
 import { Toggle } from '@/components/toggle';
 import { TranslationMatrix } from '@/components/translation-matrix';
 import type { WizardStepDefinition } from '@/components/wizard';
 import { WizardStepStatus } from '@/components/wizard/types';
+import type { LanguageCode } from '@/types/language-code';
+import { languageMap } from '@/utils/language-map';
+import { wooCsvParser } from '@/utils/woo-csv';
 import type { CarryData, Step2Result, TranslateWizardValues } from './types';
-import { FIXED_COLUMNS } from '@/components/main-screen-steps/types';
 
 /**
  * Creates the target languages selection step definition
@@ -29,14 +30,7 @@ export function createTargetLanguagesStep(): WizardStepDefinition<TranslateWizar
             }
 
             if (prevState?.status === WizardStepStatus.ERROR) {
-                return (
-                    <box flexDirection="row">
-                        <text fg="#ef4444" attributes={TextAttributes.BOLD}>
-                            ❌ Error:{' '}
-                        </text>
-                        <text attributes={TextAttributes.DIM}>{String(prevState.error ?? '')}</text>
-                    </box>
-                );
+                return <StepError message={String(prevState.error ?? '')} />;
             }
 
             const handleToggleOverride = (lang: LanguageCode, enabled: boolean) => {
