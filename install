@@ -308,8 +308,6 @@ download_and_install() {
         unzip -q "$tmp_dir/$filename" -d "$tmp_dir"
     fi
     
-    # remove the extension from the filename
-    # mv "$tmp_dir/${filename%.*}" "$INSTALL_DIR/wootui"
     mv "$tmp_dir/${filename%$archive_ext}" "$INSTALL_DIR/wootui"
     chmod 755 "$INSTALL_DIR/wootui"
     rm -rf "$tmp_dir"
@@ -360,6 +358,8 @@ case $current_shell in
     ;;
 esac
 
+path_modified=""
+
 if [[ "$no_modify_path" != "true" ]]; then
     config_file=""
     for file in $config_files; do
@@ -395,6 +395,7 @@ if [[ "$no_modify_path" != "true" ]]; then
                 print_message info "  export PATH=$INSTALL_DIR:\$PATH"
             ;;
         esac
+        path_modified="$config_file"
     fi
 fi
 
@@ -408,8 +409,19 @@ echo -e "${MUTED}█░░░█ █▀▀█ █▀▀█ ${NC}▀▀█▀▀ 
 echo -e "${MUTED}█▄█▄█ █░░█ █░░█ ${NC}░░█░░ █░░█ ░█░"
 echo -e "${MUTED}░▀░▀░ ▀▀▀▀ ▀▀▀▀ ${NC}░░▀░░ ░▀▀▀ ▀▀▀"
 echo -e ""
-echo -e ""
+
+if [[ -n "$path_modified" ]]; then
+    echo -e "${MUTED}To get started, run:${NC}"
+    echo -e ""
+    echo -e "  source $path_modified && wootui"
+    echo -e ""
+    echo -e "${MUTED}Or open a new terminal session.${NC}"
+else
+    echo -e "${MUTED}To get started, run:${NC}"
+    echo -e ""
+    echo -e "  wootui"
+fi
+
 echo -e ""
 echo -e "${MUTED}For more information visit ${NC}https://kkris0.github.io/wootui"
-echo -e ""
 echo -e ""
